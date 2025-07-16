@@ -60,7 +60,14 @@ export type PackageModel  = {
 
 
 
-
+export type RouteModel = {
+    origins: any;
+    destinations: any;
+    size_category: any;
+    base_weight_limit: any;
+    base_price: any;
+    
+}
 
 
 
