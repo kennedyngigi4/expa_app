@@ -13,6 +13,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link";
+import ConfirmPaymentsModal from "@/components/modals/confirm_payments";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export const columns: ColumnDef<PackageModel>[] = [
     {
@@ -50,6 +53,23 @@ export const columns: ColumnDef<PackageModel>[] = [
     {
         accessorKey: "",
         header: "Payments",
+        cell: ({row}) => {
+            const packageid = row.getValue("package_id");
+
+            return (
+                <ConfirmPaymentsModal title="Confirm Payments" subtitle={packageid}>
+                    <div className="flex flex-col space-y-3.5">
+                        <div>
+                            <Label className="pb-1">MPESA Code</Label>
+                            <Input type="text" className="bg-white" placeholder="e.g. TFM1V9VNHF" />
+                        </div>
+                        <div className="w-full">
+                            <Button className="w-full">Confirm</Button>
+                        </div>
+                    </div>
+                </ConfirmPaymentsModal>
+            );
+        }
     },
     {
         accessorKey: "status",

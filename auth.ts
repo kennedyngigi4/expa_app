@@ -10,9 +10,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
 
             async authorize(credentials, req) {
-                
+
                 try {
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/account/login/`, {
+                    const res = await fetch(`${process.env.APIURL}/account/login/`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -24,15 +24,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     });
 
                     const user = await res.json();
-                    
+
                     if (!res.ok) {
                         return null;
                     }
 
                     console.log(user)
-                    
+
                     if (user.message.access) {
-                        
+
                         return user.message;
                     }
                     return null;
@@ -50,8 +50,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 
     callbacks: {
-        async jwt({ token, user, account}) {
-            if(account && user){
+        async jwt({ token, user, account }) {
+            if (account && user) {
                 token.accessToken = user?.access;
                 token.id = user?.id;
                 token.name = user?.full_name ?? undefined;
@@ -72,7 +72,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     pages: {
         signIn: "/auth/login",
-    }
+    },
+
+    trustHost: true,
 
 
 })

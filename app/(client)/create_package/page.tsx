@@ -156,8 +156,7 @@ const CreatePackagePage = () => {
 
         if (isValid) {
           const formData = form.getValues();
-          console.log(selectedSize);
-          console.log("Testing ......")
+          
           if (selectedSize == "1"){
             intracityPriceCalculator({
               sender_latLng: formData.sender_latLng,
