@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import react,{ useState, useRef } from "react"
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -23,8 +23,9 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { PlusCircle } from "lucide-react"
+import { FileSpreadsheet, PlusCircle } from "lucide-react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -35,8 +36,12 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    const {data:session} = useSession();
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []
     )
 
@@ -53,7 +58,16 @@ export function DataTable<TData, TValue>({
             sorting,
             columnFilters,
         },
-    })
+    });
+
+    const handleButtonClick = async() => {
+        fileInputRef.current?.click();
+    }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+    }
 
     return (
         <div className="pb-10">
@@ -67,10 +81,18 @@ export function DataTable<TData, TValue>({
                     className="max-w-sm"
                 />
 
-                <div>
+                <div className="flex flex-row space-x-5 flex-wrap">
                     <Link href="/create_package">
                         <Button className="cursor-pointer bg-black"><PlusCircle /> Add Package</Button>
                     </Link>
+                    
+                    {session?.user?.accounttype === "business" && (
+                        <div>
+                            <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+                            <Button className="cursor-pointer" onClick={handleButtonClick}><FileSpreadsheet /> Excel Upload</Button>
+                        </div>
+                    )}
+                    
                 </div>
             </div>
             <div className="rounded-md border">

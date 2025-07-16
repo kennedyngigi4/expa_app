@@ -10,6 +10,7 @@ declare module "next-auth" {
             email?: string | null;
             image?: string | null;
             role?: string;
+            accounttype?: string;
         };
     }
 
@@ -19,6 +20,7 @@ declare module "next-auth" {
         id?: string;
         name?: string;
         role?: string;
+        accounttype?: string;
     }
 
     interface User {
@@ -27,5 +29,6 @@ declare module "next-auth" {
         id?: string;
         full_name?: string;
         role?: string;
+        account_type?: string;
     }
 }
