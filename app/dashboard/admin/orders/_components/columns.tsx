@@ -24,6 +24,13 @@ export const columns: ColumnDef<PackageModel>[] = [
     {
         accessorKey: "delivery_type",
         header: "Delivery Type",
+        cell: ({row}) => {
+            const deliveryType = row.getValue("delivery_type");
+
+            return (
+                <p className="capitalize">{deliveryType.replace("_"," ")}</p>
+            );
+        }
     },
     {
         accessorKey: "package_type_name",

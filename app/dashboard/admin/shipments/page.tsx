@@ -20,6 +20,7 @@ const ShipmentsPage = () => {
       }
 
       const data = await APIServices.get("deliveries/superadmin/shipments/", session?.accessToken);
+      console.log(data);
       setShipments(data);
     }
     fetchData();

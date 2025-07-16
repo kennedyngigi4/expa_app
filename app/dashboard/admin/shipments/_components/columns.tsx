@@ -22,15 +22,26 @@ export const columns: ColumnDef<ShipmentModel>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-          },
+        },
+        cell: ({row}) => {
+            const shipmentType = row.getValue("shipment_type");
+
+            return(
+                <p className="capitalize">{shipmentType}</p>
+            );
+        }
     },
     {
-        accessorKey: "origin_office",
+        accessorKey: "originoffice",
         header: "From",
     },
     {
-        accessorKey: "destination_office",
+        accessorKey: "destinationoffice",
         header: "Destination",
+    },
+    {
+        accessorKey: "packages.length",
+        header: "Packages",
     },
     {
         accessorKey: "status",
