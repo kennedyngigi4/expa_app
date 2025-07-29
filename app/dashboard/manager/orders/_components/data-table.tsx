@@ -109,7 +109,7 @@ export function DataTable<TData, TValue>({
                 formData.append("destination_office", destination_office);
             }
 
-            const res = await APIServices.post("deliveries/manager/shipments/", session?.accessToken, formData);
+            const res = await APIServices.post("deliveries/manager/create_shipment/", session?.accessToken, formData);
             console.log(res);
 
         } catch(e){
