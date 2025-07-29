@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useRouter } from 'next/navigation';
 import { PackageTypeModel, UrgencyModel } from '@/lib/models/all_models';
 import LocationSearch from '@/components/ui/location-search';
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 
 
@@ -59,6 +60,11 @@ const CreatePackagePage = () => {
   const [ selectedDelivery, setSelectedDelivery] = useState<string | null>(null);
   const [ distancekm, setDistancekm ] = useState(0);
   const [ estimatedPrice, setEstimatedPrice ] = useState(0);
+  const [ pickupPrice, setPickupPrice] = useState(0);
+  const [ lastMileFee, setLastMileFee ] = useState(0);
+  const [ totalFee, setTotalFee] = useState(0);
+  const [pricingError, setPricingError] = useState("");
+  
 
   useEffect(() => {
     // get selected deliverytype from homepage
@@ -121,8 +127,10 @@ const CreatePackagePage = () => {
 
   const handleNext = async(value: string) => {
     switch(value){
+
       case "images":
         setActiveTab(value);
+
       case "details":
         if (selectedDelivery == ""){
           toast.error("Delivery Type is required.");
@@ -132,6 +140,7 @@ const CreatePackagePage = () => {
           return;
         }
         setActiveTab(value);
+
       case "recipient":
         const detailsValid = await form.trigger([
           "name", "package_type", "urgency", "is_fragile", "sender_name", "sender_address", "sender_phone", "requires_pickup","pickup_date"
@@ -141,6 +150,7 @@ const CreatePackagePage = () => {
           setActiveTab(value);
         }
         return null;
+
       case "preview":
         const isValid = await form.trigger([
           "recipient_name",
@@ -156,24 +166,57 @@ const CreatePackagePage = () => {
 
         if (isValid) {
           const formData = form.getValues();
-          
-          if (selectedSize == "1"){
-            intracityPriceCalculator({
-              sender_latLng: formData.sender_latLng,
-              recipient_latLng: formData.recipient_latLng,
-              size_category: selectedSize,
-              weight: formData.weight,
-            });
-          } else {
-            intercountyPriceCalculator({
-              sender_latLng: formData.sender_latLng,
-              recipient_latLng: formData.recipient_latLng,
-              size_category: selectedSize,
-              weight: formData.weight,
-              length: formData.length,
-              width: formData.width,
-              height: formData.height,
-            });
+
+          console.log(selectedDelivery);
+
+          if (selectedDelivery == "intra_city"){
+            if(selectedSize == "1"){
+              intracityPriceCalculator({
+                sender_latLng: formData.sender_latLng,
+                recipient_latLng: formData.recipient_latLng,
+                size_category: selectedSize,
+                weight: formData.weight,
+                length: 0,
+                width: 0,
+                height: 0,
+              });
+            } else {
+              intracityPriceCalculator({
+                sender_latLng: formData.sender_latLng,
+                recipient_latLng: formData.recipient_latLng,
+                size_category: selectedSize,
+                weight: formData.weight,
+                length: formData.length,
+                width: formData.width,
+                height: formData.height,
+              });
+            }
+          } else if (selectedDelivery == "inter_county") {
+            if (selectedSize == "1") {
+              intercountyPriceCalculator({
+                sender_latLng: formData.sender_latLng,
+                recipient_latLng: formData.recipient_latLng,
+                size_category: selectedSize,
+                weight: formData.weight,
+                length: "1",
+                width: "1",
+                height: "1",
+                requires_last_mile: formData.requires_last_mile,
+                requires_pickup: formData.requires_pickup,
+              });
+            } else if (selectedSize == "2") {
+              intercountyPriceCalculator({
+                sender_latLng: formData.sender_latLng,
+                recipient_latLng: formData.recipient_latLng,
+                size_category: selectedSize,
+                weight: formData.weight,
+                length: formData.length,
+                width: formData.width,
+                height: formData.height,
+                requires_last_mile: formData.requires_last_mile,
+                requires_pickup: formData.requires_pickup,
+              });
+            }
           }
           
           setActiveTab(value);
@@ -225,7 +268,7 @@ const CreatePackagePage = () => {
   });
 
   const { setValue } = form;
-
+  const formValues = form.watch();
 
   const onSubmit = async(values: z.infer<typeof formSchema>) => {
 
@@ -309,7 +352,12 @@ const CreatePackagePage = () => {
     sender_latLng: any;
     recipient_latLng: any;
     size_category: string;
-    weight: any;}) => {
+    weight: any;
+    length: any;
+    width: any;
+    height: any;
+  }) => {
+      setPricingError("");
       if (!session?.accessToken) {
         throw new Error("You must be logged in.");
       }
@@ -319,6 +367,8 @@ const CreatePackagePage = () => {
       if(res.success){
         setEstimatedPrice(res.estimated_fee);
         setDistancekm(res.distance_km);
+      } else {
+        setPricingError(res.message)
       }
   }
 
@@ -331,7 +381,11 @@ const CreatePackagePage = () => {
     length: any;
     width: any;
     height: any;
+    requires_last_mile: any;
+    requires_pickup: any;
   }) => {
+
+    setPricingError("");
     if (!session?.accessToken) {
       throw new Error("You must be logged in.");
     }
@@ -339,10 +393,13 @@ const CreatePackagePage = () => {
     const res = await APIServices.intracity("deliveries/intercounty_pricing/", session?.accessToken, payload);
     
     if (res.success) {
+      setPickupPrice(res.pickup_fee);
       setEstimatedPrice(res.estimated_fee);
-      
+      setLastMileFee(res.last_mile_fee);
+      setTotalFee(res.total_fee);
+
     } else {
-      console.log(res.message)
+      setPricingError(res.message)
     }
   }
 
@@ -358,7 +415,7 @@ const CreatePackagePage = () => {
             <TabsTrigger value="images">Image & Type</TabsTrigger>
             <TabsTrigger value="details">Package Details</TabsTrigger>
             <TabsTrigger value="recipient">Recipient</TabsTrigger>
-            <TabsTrigger value="preview">Preview & Payments</TabsTrigger>
+            <TabsTrigger value="preview">Payments</TabsTrigger>
           </TabsList>
 
           <Form {...form}>
@@ -399,8 +456,8 @@ const CreatePackagePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {['intra_city', 'inter_county', 'international'].map((item) => (
                       <div className={cn('flex flex-col p-6 rounded-2xl border-2 border-slate-200 cursor-pointer', selectedDelivery==item.toString() ? "bg-orange-50 border-2 border-orange-400" : "" )} key={item} onClick={() => handleSelectedDelivery(item)}>
-                        <h1 className="capitalize font-semibold text-primary pb-5">{item}</h1>
-                        <p className='text-slate-500'>{item}</p>
+                        <h1 className="capitalize font-semibold text-primary pb-5">{item.replace("_"," ")}</h1>
+                        <p className='text-slate-500 capitalize'>{item.replace("_", " ")}</p>
                       </div>
                     ))}
                   </div>
@@ -827,20 +884,77 @@ const CreatePackagePage = () => {
                 </div>
               </TabsContent>
               <TabsContent value="preview">
-                <div className='pb-3'>
-                  <h1 className='text-primary font-semibold text-xl'>Preview & Pay</h1>
-                  <p className='text-slate-400'>Preview package details and click submit for payments.</p>
-                </div>
 
-                <div>
-                  <h1>Estimated Fee: {estimatedPrice}</h1>
-                  <h1>Distance in Kms: {distancekm}</h1>
-                </div>
 
-                <div className='py-5 flex space-x-15'>
-                  <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("recipient")}><ArrowLeft /> Back</Button>
-                  <Button type="submit" className='bg-orange-400 cursor-pointer'>Submit</Button>
-                </div>
+                <Card className="w-full max-w-lg mx-auto my-10">
+                  <CardHeader>
+                    <CardTitle>Payments</CardTitle>
+                    <CardDescription>
+                      Proceed with payments.
+                    </CardDescription>
+                    <CardAction>
+                      <Select value='mpesa'>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose payment option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="mpesa">M-Pesa</SelectItem>
+                          <SelectItem value="airtel">Airtel Money</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </CardAction>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedDelivery == "intra_city" && (
+                      <div className='space-y-5'>
+                        <h1 className="flex flex-row justify-between items-center">Estimated Fee <span>{estimatedPrice}</span></h1>
+                        <h1 className="flex flex-row justify-between items-center">Distance in Kms <span>{distancekm}kms</span></h1>
+                      </div>
+                    )}
+
+                    {selectedDelivery == "inter_county" && (
+                      <div className='space-y-5'>
+                        {pickupPrice != 0 && (
+                          <h1 className="flex flex-row justify-between items-center">Pick up Fee <span>KSh. {pickupPrice.toLocaleString()}</span></h1>
+                        )}
+                        <h1 className="flex flex-row justify-between items-center">Estimated Fee <span>KSh. {estimatedPrice.toLocaleString()}</span></h1>
+                        {lastMileFee != 0 && (
+                          <h1 className="flex flex-row justify-between items-center">Last Mile Fee <span>KSh. {lastMileFee.toLocaleString()}</span></h1>
+                        )}
+                        <h1 className="flex flex-row justify-between items-center py-6">Total Fee <span>KSh. {totalFee.toLocaleString()}</span></h1>
+                      </div>
+                    )}
+
+                    <div className='pt-8 mx-auto text-center'>
+                      <h1 className="">M-Pesa Payments Number <br/></h1>
+                      <h1>{formValues.sender_phone || "Not Provided"}</h1>
+                    </div>
+                  </CardContent>
+                  <CardFooter className='pt-10 flex flex-row justify-between'>
+                    
+                      <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("recipient")}><ArrowLeft /> Back</Button>
+                      
+                      {(estimatedPrice != 0 || totalFee != 0) ? (
+                        <Button type="submit" className='bg-orange-400 cursor-pointer'>Submit</Button>
+                      ) : (
+                        <p className='text-red-500'>{pricingError}</p>
+                      )}
+                      
+                    
+                  </CardFooter>
+                </Card>
+
+
+
+                
+
+                
+
+
+                
+                
+
+                
               </TabsContent>
             </form>
           </Form>

@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { ShipmentModel } from "@/lib/models/all_models"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import Link from "next/link"
 
 export const columns: ColumnDef<ShipmentModel>[] = [
     {
@@ -49,15 +50,21 @@ export const columns: ColumnDef<ShipmentModel>[] = [
         },
     },
     {
-        accessorKey: "destination_office",
-        header: "Destination Office",
+        accessorKey: "summary",
+        header: "Summary",
     },
     {
-        accessorKey: "",
+        accessorKey: "packages.length",
         header: "Packages",
     },
     {
         accessorKey: "",
         header: "Action",
+        cell: ({row}) => {
+            const shipment = row.original
+            return(
+                <Link href={`/dashboard/manager/shipments/${shipment.id}/`}><MoreHorizontal /></Link>
+            );
+        }
     },
 ]

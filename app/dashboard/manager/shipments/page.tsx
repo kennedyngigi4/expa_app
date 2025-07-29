@@ -19,7 +19,6 @@ const ShipmentsPage = () => {
         throw new Error("You must be logged in.")
       }
       const data = await APIServices.get(`deliveries/manager/shipments/?category=${category}`, session?.accessToken);
-      console.log(data);
       setShipments(data);
     }
     fetchData();

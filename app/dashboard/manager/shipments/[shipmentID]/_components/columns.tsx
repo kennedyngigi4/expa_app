@@ -5,7 +5,6 @@ import { PackageModel } from "@/lib/models/all_models"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
-import Link from "next/link"
 
 export const columns: ColumnDef<PackageModel>[] = [
     {
@@ -42,13 +41,7 @@ export const columns: ColumnDef<PackageModel>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-        },
-        cell: ({row}) => {
-            const packageItem = row?.original;
-            return(
-                <Link href={`/dashboard/manager/orders/${packageItem?.id}`}>{packageItem?.package_id}</Link>
-            );
-        }
+          },
     },
     {
         accessorKey: "delivery_type",

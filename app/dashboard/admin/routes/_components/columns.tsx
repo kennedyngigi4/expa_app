@@ -20,4 +20,8 @@ export const columns: ColumnDef<RouteModel>[] = [
         accessorKey: "base_price",
         header: "Base Price (KShs.)",
     },
+    {
+        accessorKey: "size_category",
+        header: "Package Size",
+    },
 ]

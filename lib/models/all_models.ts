@@ -55,6 +55,8 @@ export type PackageModel  = {
     recipient_latLng: string;
     status: string;
     is_paid: boolean;
+    created_by_role: string;
+    created_at: string;
 }
 
 
@@ -72,6 +74,7 @@ export type RouteModel = {
 
 
 export type ShipmentModel = {
+    id: string;
     shipment_id: string;
     shipment_type: string; 
     origin_office: string;
@@ -79,6 +82,10 @@ export type ShipmentModel = {
     destination_office: string;
     destinationoffice?: string;
     status: string;
+    qrcode_svg: string;
+    summary: string;
+    assigned_at: string;
+    packages: PackageModel;
 }
 
 

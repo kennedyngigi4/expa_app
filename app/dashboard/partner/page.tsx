@@ -27,7 +27,7 @@ const PartnerHome = () => {
         const res = await APIServices.get("deliveries/partnershop/packages/", session?.accessToken);
         const notificationsData = await APIServices.get("messaging/partnershop/notifications/", session?.accessToken);
         const statisticsData = await APIServices.get("account/partnershop/statistics/", session?.accessToken); 
-                    
+        console.log(res)
         setOrders(res);
         setNotifications(notificationsData);
         setStatistics(statisticsData);
