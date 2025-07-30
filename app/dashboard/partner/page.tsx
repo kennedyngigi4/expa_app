@@ -27,7 +27,7 @@ const PartnerHome = () => {
         const res = await APIServices.get("deliveries/partnershop/packages/", session?.accessToken);
         const notificationsData = await APIServices.get("messaging/partnershop/notifications/", session?.accessToken);
         const statisticsData = await APIServices.get("account/partnershop/statistics/", session?.accessToken); 
-        console.log(res)
+        console.log(statisticsData)
         setOrders(res);
         setNotifications(notificationsData);
         setStatistics(statisticsData);
@@ -85,7 +85,7 @@ const PartnerHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">1,000,000 <span className='text-xs font-semibold text-slate-500'>KSH</span></CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics.total_earnings} <span className='text-xs font-semibold text-slate-500'>KSH</span></CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
             <p>Earnings</p>

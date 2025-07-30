@@ -22,7 +22,7 @@ const OrdersPage = () => {
       }
 
       const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}`, session?.accessToken);
-      
+      console.log(data);
       setOrders(data);
     }
     fetchData()
@@ -36,7 +36,7 @@ const OrdersPage = () => {
       </div>
 
       <div className="flex space-x-2 mb-4">
-        {["unassigned", "assigned", "in_transit", "delivered", "all"].map((cat) => (
+        {["unassigned", "assigned", "incoming", "in_transit", "delivered", "all"].map((cat) => (
           <Button
             key={cat}
             variant={category === cat ? "default" : "outline"}

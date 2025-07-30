@@ -99,7 +99,15 @@ export const columns: ColumnDef<PackageModel>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-          },
+        },
+        cell: ({row}) => {
+            const sender_name = row?.original?.sender_name;
+            const created_by_role = row?.original.created_by_role;
+
+            return (
+                <p>{sender_name} - <span className="text-xs capitalize">{created_by_role}</span></p>
+            );
+        }
     },
     {
         accessorKey: "is_paid",
