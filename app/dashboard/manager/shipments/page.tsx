@@ -34,7 +34,7 @@ const ShipmentsPage = () => {
 
 
       <div className='flex space-x-2.5 mb-5'>
-        {["assigned", "in_transit", "delivered", "returned", "cancelled", "all"].map((cat) => (
+        {["assigned", "IN_TRANSIT", "RECEIVED", "DELIVERED", "RETURNED", "CANCELLED", "ALL"].map((cat) => (
           <Button 
             key={cat}
             variant={category === cat ? "default" : "outline"}

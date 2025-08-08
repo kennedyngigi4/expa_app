@@ -6,6 +6,7 @@ import { APIServices } from '@/lib/utils/api_services';
 import { PackageModel, ShipmentModel } from '@/lib/models/all_models';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 
 const ShipmentDetailsPage = () => {
@@ -28,6 +29,18 @@ const ShipmentDetailsPage = () => {
         fetchData();
     }, [session, params]);
 
+
+    const handleReceivedConfirmation = async() => {
+        
+        if (!session?.accessToken) {
+            throw new Error("You must be logged in.")
+        }
+
+        const formData = new FormData();
+        const res = await APIServices.post(`deliveries/manager/shipments/${shipmentData?.id}/confirm-received/`, session?.accessToken, formData);
+        console.log(res);
+    }
+
     return (
         <section>
             <div className='grid md:grid-cols-3 grid-cols-1'>
@@ -37,6 +50,13 @@ const ShipmentDetailsPage = () => {
                         <p className='capitalize'>{shipmentData?.status}</p>
                         <p>{new Date(shipmentData?.assigned_at).toLocaleDateString("en-us", { year: "numeric", month: "short", day: "numeric"})}</p>
                     </div>
+
+                    <div className='pt-6'>
+                        {shipmentData?.shipment_type == "pickup" && (
+                            <Button onClick={handleReceivedConfirmation}>Confirm Received</Button>
+                        )}
+                    </div>
+                    
                 </div>
                 <div className='pt-4 space-y-2'>
                     <h1 className='font-semibold text-primary'>Details</h1>
