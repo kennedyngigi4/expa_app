@@ -12,11 +12,11 @@ export const APIServices = {
             
             
             const res = await response.json();
-            
+            console.log(res);
             
             
             if(!response.ok){
-                return { "success": false, "message": "Something went wrong.", }
+                return { "success": false, "message": res.message, }
             }
 
             return res;

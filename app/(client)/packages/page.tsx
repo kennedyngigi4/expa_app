@@ -8,10 +8,13 @@ import { DataTable } from './_components/data-table';
 import { columns } from './_components/columns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BanknoteArrowUp, File, Package } from 'lucide-react';
+import { CorporateTable } from './_components/corporate-table';
+import { CorporateColumns } from './_components/corporate-columns';
 
 const PackagesPage = () => {
   const { data:session} = useSession();
-  const [ packages, setPackages ] = useState<PackageModel[]>([]);
+  const [ clientPackages, setClientPackages ] = useState<PackageModel[]>([]);
+  const [ businessPackages, setBusinessPackages] = useState<PackageModel[]>([]);
   const [ statsData, setStatsData ] = useState({});
 
   useEffect(() => {
@@ -20,16 +23,19 @@ const PackagesPage = () => {
       if (!session?.accessToken) {
         throw new Error("You must be logged in.");
       }
-
-      const res = await APIServices.get(`deliveries/user_packages/`, session?.accessToken);
+      
+      const [ clientPackages, businessPackages ] = await Promise.all([
+        await APIServices.get(`deliveries/user_packages/`, session?.accessToken),
+        await APIServices.get(`corporate/orders/`, session?.accessToken)
+      ]);
 
       if (session?.user?.accounttype === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
-        console.log(stats);
         setStatsData(stats);
       }
       
-      setPackages(res);
+      setClientPackages(clientPackages);
+      setBusinessPackages(businessPackages);
     } 
     fetchData();
   }, [session]);
@@ -82,13 +88,20 @@ const PackagesPage = () => {
       )}
 
 
+
+
       <div className='py-5'>
         <h1 className='text-primary font-semibold text-xl'>Packages</h1>
         <p className='text-slate-500'>A list of packages you have submitted for delivery.</p>
       </div>
 
       <div>
-        <DataTable columns={columns} data={packages} />
+        {session?.user?.accounttype === "business" ? (
+          <CorporateTable columns={CorporateColumns} data={businessPackages} />
+        ) : (
+          <DataTable columns={columns} data={clientPackages} />
+        )}
+        
       </div>
     </section>
   )

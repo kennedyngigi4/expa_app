@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { InvoiceModel } from "@/lib/models/all_models"
 import { cn } from "@/lib/utils"
+import { APIServices } from "@/lib/utils/api_services"
 import { ColumnDef } from "@tanstack/react-table"
-
+import Link from "next/link"
+import { useSession } from "next-auth/react"
 
 
 export const columns: ColumnDef<InvoiceModel>[] = [
@@ -56,9 +58,40 @@ export const columns: ColumnDef<InvoiceModel>[] = [
         accessorKey: "",
         header: "Download PDF",
         cell: ({row}) => {
+            const {data:session} = useSession();
+            const invoice = row?.original;
+            const downloadPdf = async(id: string) => {
+                const resp = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/payments/invoices/${id}/`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Token ${session?.accessToken}`
+                    }
+                });
+
+                console.log(resp);
+
+                if (!resp.ok) {
+                    alert("Failed to fetch invoice");
+                    return;
+                }
+
+                const blob = await resp.blob();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, "_blank"); // opens in new tab
+                console.log(resp);
+            }
             return (
-                <Button variant="ghost" className="cursor-pointer">Download PDF</Button>
+                <Button onClick={() => downloadPdf(invoice?.id)} variant="ghost" className="cursor-pointer">Download PDF</Button>
             )
         }
+    },
+    {
+        id: "month",
+        accessorFn: (row) => {
+            const date = new Date(row.issued_at)
+            return (date.getMonth() + 1).toString() // "1".."12"
+        },
+        header: "",
+        
     },
 ]

@@ -5,6 +5,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import FAQS from '../_components/faqs';
+import FullLoadsForm from './_components/full-loads-form';
 
 const ClientPage = () => {
 
@@ -92,6 +93,23 @@ const ClientPage = () => {
           </div>
         </div>
       </div>
+
+
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-5 md:px-30 px-12 py-10">
+        <div>
+          <h1 className='font-bold text-2xl text-orange-600'>Full Load Services</h1>
+        </div>
+        <div className="shadow-xl rounded-2xl p-6">
+          <h4 className='font-semibold text-lg'>Calculate Our Rates</h4>
+          <h6 className='text-slate-500'>Get our rates for either a van or truck.</h6>
+
+          <div className='pt-8 w-full'>
+            <FullLoadsForm />
+          </div>
+        </div>
+      </div>
+
+
 
 
       <div className="w-full pt-10 md:px-30 px-12 max-lg:hidden">

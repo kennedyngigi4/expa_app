@@ -391,7 +391,7 @@ const CreatePackagePage = () => {
     }
 
     const res = await APIServices.intracity("deliveries/intercounty_pricing/", session?.accessToken, payload);
-    
+    console.log(res);
     if (res.success) {
       setPickupPrice(res.pickup_fee);
       setEstimatedPrice(res.estimated_fee);

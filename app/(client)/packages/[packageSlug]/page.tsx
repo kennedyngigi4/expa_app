@@ -21,7 +21,7 @@ const PackageDetailsSlug = () => {
             }
 
             const res = await APIServices.get(`deliveries/user_package_details/${params.packageSlug}/`, session?.accessToken);
-            
+            console.log(res);
             setPackageData(res.data);
         }
         fetchData();
@@ -54,47 +54,47 @@ const PackageDetailsSlug = () => {
 
             <div>
                 <h1 className='text-primary font-semibold pb-1'>More Details</h1>
-                <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-8'>
-                    <div className='pb-2'>
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 border border-gray-300">
+                    <div className='border border-gray-300 p-4'>
                         <h1 className="text-slate-500">Package Name</h1>
                         <p>{packageData?.name}</p>
                     </div>
-                    <div className='pb-2'>
+                    <div className='border border-gray-300 p-4'>
                         <h1 className="text-slate-500">Delivery Type</h1>
                         <p className='capitalize'>{packageData?.delivery_type.replace("_", " ")}</p>
                     </div>
-                    <div className='pb-2'>
+                    <div className='border border-gray-300 p-4'>
                         <h1 className="text-slate-500">Package Type</h1>
                         <p className='capitalize'>{packageData?.package_type_name}</p>
                     </div>
-                    <div className='pb-2'>
+                    <div className='border border-gray-300 p-4'>
                         <h1 className="text-slate-500">Fragile</h1>
                         <p>{packageData?.is_fragile ? (<>Not Fragile</>) : (<>Fragile</>)}</p>
                     </div>
-                    <div className='pb-2'>
+                    <div className='border border-gray-300 p-4'>
                         <h1 className="text-slate-500">Urgency</h1>
                         <p>{packageData?.urgency_name}</p>
                     </div>
                     {packageData?.length && (
-                        <div className='pb-2'>
+                        <div className='border border-gray-300 p-4'>
                             <h1 className="text-slate-500">Length (cm)</h1>
                             <p>{packageData?.length}</p>
                         </div>
                     )}
                     {packageData?.width && (
-                        <div className='pb-2'>
+                        <div className='border border-gray-300 p-4'>
                             <h1 className="text-slate-500">Width (cm)</h1>
                             <p>{packageData?.width}</p>
                         </div>
                     )}
                     {packageData?.height && (
-                        <div className='pb-2'>
+                        <div className='border border-gray-300 p-4'>
                             <h1 className="text-slate-500">Height (cm)</h1>
                             <p>{packageData?.height}</p>
                         </div>
                     )}
                     {packageData?.weight && (
-                        <div className='pb-2'>
+                        <div className='border border-gray-300 p-4'>
                             <h1 className="text-slate-500">Weight (kgs)</h1>
                             <p>{packageData?.weight}</p>
                         </div>
@@ -105,14 +105,14 @@ const PackageDetailsSlug = () => {
 
             <div>
                 <h1 className='text-primary font-semibold pb-1'>Delivery Details</h1>
-                <div className='grid lg:grid-cols-2 grid-cols-1 gap-8'>
-                    <div>
+                <div className="grid md:grid-cols-2 grid-cols-1 border border-gray-300">
+                    <div className="border border-gray-300 p-4">
                         <h1 className='text-slate-500 font-semibold text-lg'>From</h1>
                         <h1>{packageData?.sender_name}</h1>
                         <h1>{packageData?.sender_phone}</h1>
                         <h1>{packageData?.sender_address}</h1>
                     </div>
-                    <div>
+                    <div className="border border-gray-300 p-4">
                         <h1 className='text-slate-500 font-semibold text-lg'>To</h1>
                         <h1>{packageData?.recipient_name}</h1>
                         <h1>{packageData?.recipient_phone}</h1>
@@ -120,6 +120,9 @@ const PackageDetailsSlug = () => {
                     </div>
                 </div>
             </div>
+
+            
+
         </section>
     )
 }
