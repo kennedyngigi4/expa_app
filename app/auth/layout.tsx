@@ -4,7 +4,7 @@ const AuthLayout = ({
     children
 } : { children: React.ReactNode }) => {
   return (
-    <section className="flex justify-center items-center h-screen bg-[url('/images/bg/1.jpg')] bg-cover bg-center">
+    <section className="flex justify-center items-center min-h-screen bg-[url('/images/bg/1.jpg')] bg-cover bg-center">
         {children}
     </section>
   )

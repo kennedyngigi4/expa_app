@@ -13,6 +13,9 @@ import Link from 'next/link';
 import { Eye, EyeClosed } from 'lucide-react';
 import { userRegistration } from '@/lib/utils/auth_services';
 import { toast } from 'sonner';
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import Image from 'next/image';
 
 
 const formSchema = z.object({
@@ -67,102 +70,113 @@ const RegistrationPage = () => {
     }
 
     return (
-            <section className="md:w-[30%] w-[90%]">
+            <section className="md:w-[70%] w-[90%]">
                 <Card className=''>
-                    <CardHeader>
-                        <CardTitle className='text-2xl text-primary font-bold'>Register</CardTitle>
-                    <CardDescription>Welcome to <span className='text-primary font-semibold'>Express Parcel - EXPA</span></CardDescription>
+                    
+                    <CardContent className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                        <div className="flex flex-col items-center justify-center ">
+                            <Image src="/icons/auth.png" className="" width={400} height={100} alt="" />
+                            <div className="flex flex-col py-6 md:block max-md:hidden">
+                                <h1 className='text-center text-xl text-primary font-bold pb-5'>Welcome To Express Parcel - EXPA</h1>
+                                <p className="text-center">Fast, reliable deliveries at your fingertips. Sign in or create an account to begin.</p>
+                            </div>
+                        </div>
 
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-                                <FormField
-                                    control={form.control}
-                                    name="fullname"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Full Name</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    className='bg-white'
-                                                    placeholder='Your full name'
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="email"
-                                                    className='bg-white'
-                                                    placeholder='Your email address'
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-
-                                <FormField
-                                    control={form.control}
-                                    name="phone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Phone</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="tel"
-                                                    className='bg-white'
-                                                    placeholder='+254722....'
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Password</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
+                        <div>
+                            <CardTitle className='text-lg text-primary font-bold'>Register</CardTitle>
+                            <CardDescription className='mb-4'>Fill all the form fields below.</CardDescription>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+                                    <FormField
+                                        control={form.control}
+                                        name="fullname"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Full Name</FormLabel>
+                                                <FormControl>
                                                     <Input
-                                                        type={passwordType ? "text" : "password"}
+                                                        type="text"
                                                         className='bg-white'
-                                                        placeholder='********'
+                                                        placeholder='Your full name'
                                                         {...field}
                                                     />
-                                                    <div className="absolute z-50 right-3 top-3" onClick={() => setPasswordType((prev) => !prev)}>
-                                                        {passwordType ? <><Eye className="w-4 h-4 text-slate-500" /></> : <><EyeClosed className="w-4 h-4  text-slate-500" /></>}
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Email</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="email"
+                                                        className='bg-white'
+                                                        placeholder='Your email address'
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+
+                                    <FormField
+                                        control={form.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Phone</FormLabel>
+                                                <FormControl>
+                                                    <PhoneInput 
+                                                        international
+                                                        defaultCountry="KE"
+                                                        className="border rounded-lg px-3 py-2"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Password</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type={passwordType ? "text" : "password"}
+                                                            className='bg-white'
+                                                            placeholder='********'
+                                                            {...field}
+                                                        />
+                                                        <div className="absolute z-50 right-3 top-3" onClick={() => setPasswordType((prev) => !prev)}>
+                                                            {passwordType ? <><Eye className="w-4 h-4 text-slate-500" /></> : <><EyeClosed className="w-4 h-4  text-slate-500" /></>}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                <div className='w-full'>
-                                <Button disabled={!isValid || isSubmitting} className="bg-primary text-white w-full cursor-pointer">{loading ? "Authenticating ...." : "Register"}</Button>
-                                </div>
-                            </form>
-                        </Form>
+                                    <div className='w-full'>
+                                    <Button disabled={!isValid || isSubmitting} className="bg-primary text-white w-full cursor-pointer">{loading ? "Authenticating ...." : "Register"}</Button>
+                                    </div>
+                                </form>
+                            </Form>
 
-                        <p className='flex flex-row pt-5'>Already having account? <Link className='text-primary ps-1' href="/auth/login"> Log in</Link></p>
-
+                            <p className='flex flex-row pt-5'>Already having account? <Link className='text-primary ps-1' href="/auth/login"> Log in</Link></p>
+                        </div>
                     </CardContent>
 
                 </Card>

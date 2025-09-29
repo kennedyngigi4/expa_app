@@ -15,6 +15,7 @@ import { Eye, EyeClosed } from 'lucide-react';
 import { toast } from 'sonner';
 import { userLogin } from '@/lib/utils/auth_services';
 import { useSession, getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 
 const formSchema = z.object({
@@ -80,65 +81,70 @@ const LoginPage = () => {
     }
 
     return (
-        <section className="md:w-[30%] w-[90%]">
+        <section className="md:w-[60%] w-[90%]">
             <Card className=''>
-                <CardHeader>
-                    <CardTitle className='text-2xl text-primary font-bold'>Login</CardTitle>
-                    <CardDescription>Welcome back to <span className='text-primary font-semibold'>EXPA</span></CardDescription>
-                    
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-                            <FormField 
-                                control={form.control}
-                                name="email"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                type="email"
-                                                className='bg-white'
-                                                placeholder='Your email address'
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField 
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <div className='relative'>
-                                                <Input
-                                                    type={ passwordType ? "text" : "password" }
+                <CardContent className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+                    <div className="flex flex-col items-center justify-center ">
+                        <Image src="/icons/auth.png" className="" width={400} height={100} alt="" />
+                        <div className="flex flex-col py-6 md:block max-md:hidden">
+                            <h1 className='text-center text-xl text-primary font-bold pb-1'>Welcome Back To EXPA</h1>
+                            <p className="text-center">Fast, reliable deliveries at your fingertips. Sign in or create an account to begin.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <CardTitle className='text-lg text-primary font-bold'>Login</CardTitle>
+                        <CardDescription className='mb-4'>Fill all the form fields below.</CardDescription>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+                                <FormField 
+                                    control={form.control}
+                                    name="email"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input 
+                                                    type="email"
                                                     className='bg-white'
-                                                    placeholder='********'
+                                                    placeholder='Your email address'
                                                     {...field}
                                                 />
-                                                <div className="absolute z-50 right-3 top-3" onClick={() => setPasswordType((prev) => !prev)}>
-                                                    {passwordType ? <><Eye className="w-4 h-4 text-slate-500" /></> : <><EyeClosed className="w-4 h-4  text-slate-500" /></>}
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField 
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Password</FormLabel>
+                                            <FormControl>
+                                                <div className='relative'>
+                                                    <Input
+                                                        type={ passwordType ? "text" : "password" }
+                                                        className='bg-white'
+                                                        placeholder='********'
+                                                        {...field}
+                                                    />
+                                                    <div className="absolute z-50 right-3 top-3" onClick={() => setPasswordType((prev) => !prev)}>
+                                                        {passwordType ? <><Eye className="w-4 h-4 text-slate-500" /></> : <><EyeClosed className="w-4 h-4  text-slate-500" /></>}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
 
-                            <div className='w-full'>
-                                <Button disabled={!isValid || isSubmitting} className="bg-primary text-white w-full cursor-pointer">{loading ? "Authenticating ..." : "Log In"}</Button>
-                            </div>
-                        </form>
-                    </Form>
+                                <div className='w-full'>
+                                    <Button disabled={!isValid || isSubmitting} className="bg-primary text-white w-full cursor-pointer">{loading ? "Authenticating ..." : "Log In"}</Button>
+                                </div>
+                            </form>
+                        </Form>
 
-                    <p className='flex flex-row pt-5'>No registered? <Link className='text-primary ps-1' href="/auth/registration"> Register</Link></p>
-                    
+                        <p className='flex flex-row pt-5'>No registered? <Link className='text-primary ps-1' href="/auth/registration"> Register</Link></p>
+                    </div>
                 </CardContent>
                 
             </Card>

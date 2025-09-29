@@ -27,6 +27,7 @@ const FullLoadsForm = () => {
     const {data:session} = useSession();
     const [ vehicleTypes, setVehicleTypes ] = useState<string[]>([]);
     const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+    const [distance, setDistance] = useState();
     const [loadingPrice, setLoadingPrice] = useState(false);
 
     useEffect(() => {
@@ -84,6 +85,7 @@ const FullLoadsForm = () => {
                     toast.error(resp.message || "Failed to calculate price");
                 }else if (resp?.success && resp.price) {
                     setCalculatedPrice(resp.price);
+                    setDistance(resp.distance_km);
                 } else {
                     setCalculatedPrice(null);
                 }
@@ -103,13 +105,19 @@ const FullLoadsForm = () => {
         const formData = new FormData();
         formData.append("vehicle", values.vehicle_type);
         formData.append("weight", values.weight);
-        formData.append("origin_latLng", values.origin_latLng);
-        formData.append("origin", values.origin);
-        formData.append("destination", values.destination);
-        formData.append("destination_latLng", values.destination_latLng);
+        formData.append("pickup_address", values.origin);
+        formData.append("dropoff_address", values.destination);
+        formData.append("price", calculatedPrice?.toString());
+        formData.append("distance", distance?.toString());
+        
 
-        // const resp = await APIServices.post("fullloads/price_calculator/", session?.accessToken, formData);
-        // console.log(resp);
+        const resp = await APIServices.post("fullloads/book-fullload/", session?.accessToken, formData);
+        if(resp["success"]){
+            toast.success(resp["message"]);
+            window.location.reload();
+        } else {
+            toast.error("An error occured.");
+        }
     }
 
 

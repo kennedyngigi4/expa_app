@@ -7,6 +7,7 @@ declare module "next-auth" {
         user: {
             id?: string;
             name?: string;
+            phone?: string;
             email?: string | null;
             image?: string | null;
             role?: string;
@@ -19,6 +20,7 @@ declare module "next-auth" {
         refreshToken?: string;
         id?: string;
         name?: string;
+        phone?: string;
         role?: string;
         accounttype?: string;
     }
@@ -28,6 +30,7 @@ declare module "next-auth" {
         refresh?: string;
         id?: string;
         full_name?: string;
+        phone?: string;
         role?: string;
         account_type?: string;
     }

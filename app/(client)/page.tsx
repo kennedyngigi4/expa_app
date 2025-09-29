@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import FAQS from '../_components/faqs';
 import FullLoadsForm from './_components/full-loads-form';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const ClientPage = () => {
 
@@ -18,47 +20,70 @@ const ClientPage = () => {
   }
 
   return (
-    <section className="flex flex-col py-8">
+    <section className="flex flex-col">
 
-      <div className="flex md:flex-row flex-col justify-between items-center md:px-30 px-12 ">
-        <div>
-          <h1 className="font-bold text-xl">Welcome {session?.user?.name}!</h1>
-          <p className="text-slate-500">What would you like EXPA to deliver on your behalf?</p>
+      <div className="bg-orange-100 flex md:flex-row flex-col justify-between items-center px-12 md:px-30 md:h-[300px] overflow-hidden">
+        <div className="flex-1 py-5">
+          <h1 className="font-bold">Welcome back {session?.user?.name}!</h1>
+
+          <div className="pt-15">
+            <h1 className="font-bold text-2xl">Get Your Things Delivered</h1>
+            <p>Anything. Anytime. Anywhere ...</p>
+          </div>
+        </div>
+
+        
+        <div className="relative flex-1 h-full overflow-hidden max-md:hidden">
+          <Image
+            src="/icons/avatar.png"
+            alt="EXPA"
+            fill
+            className="object-contain md:object-right"
+            priority
+          />
         </div>
       </div>
 
-      <div className="w-full grid md:grid-cols-3 grid-cols-1 gap-4 pt-15 md:px-30 px-12">
-        <div className="grid md:grid-cols-2 grid-cols-1 shadow p-4 rounded-lg cursor-pointer" onClick={() => handleDelivery("intra_city")}>
+
+
+      <div className="w-full grid md:grid-cols-3 grid-cols-1 gap-4 py-8 md:px-30 px-12">
+        <div className="grid grid-cols-1 shadow p-4 rounded-lg cursor-pointer bg-orange-100" onClick={() => handleDelivery("intra_city")}>
           <div>
             <Image src="/images/icons/bike.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-orange-400">Intra City Delivery</h1>
             <p>Send your parcel within your city. Same day deliveries in your town.</p>
+
+            <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 grid-cols-1 shadow p-4 rounded-lg cursor-pointer" onClick={() => handleDelivery("inter_county")}>
+        <div className="grid grid-cols-1 shadow p-4 rounded-lg cursor-pointer bg-orange-100" onClick={() => handleDelivery("inter_county")}>
           <div>
             <Image src="/images/icons/truck.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-orange-400">Inter County Delivery</h1>
             <p>Send your parcel from one town to another. Deliveries can take 1 day or more.</p>
+
+            <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 grid-cols-1 shadow p-4 rounded-lg cursor-pointer" onClick={() => handleDelivery("international")}>
+        <div className="grid grid-cols-1 shadow p-4 rounded-lg cursor-pointer bg-orange-100" onClick={() => handleDelivery("international")}>
           <div>
             <Image src="/images/icons/plane.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-orange-400">International Delivery</h1>
             <p>Send your parcel out of Kenya to another country.</p>
+
+            <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
           </div>
         </div>
       </div>
 
 
-      {/* { TODO LIST LATEST PACKAGES} */}
+      
 
 
       <div className="w-full py-10 bg-orange-400 md:px-30 px-12 max-lg:hidden">
@@ -95,11 +120,18 @@ const ClientPage = () => {
       </div>
 
 
-      <div className="grid md:grid-cols-2 grid-cols-1 gap-5 md:px-30 px-12 py-10">
-        <div>
-          <h1 className='font-bold text-2xl text-orange-600'>Full Load Services</h1>
+      <div className="grid md:grid-cols-2 grid-cols-1 md:px-30 px-12 py-10">
+        <div className='relative shadow rounded-l-2xl p-6'>
+          <Image
+            src="/images/others/fullload.jpg"
+            alt="EXPA"
+            fill
+            className="object-cover md:object-center"
+            priority
+          />
         </div>
-        <div className="shadow-xl rounded-2xl p-6">
+        <div className="shadow rounded-r-2xl p-6">
+          <h1 className='font-bold text-2xl text-orange-600'>Full Load Services</h1>
           <h4 className='font-semibold text-lg'>Calculate Our Rates</h4>
           <h6 className='text-slate-500'>Get our rates for either a van or truck.</h6>
 
@@ -112,7 +144,7 @@ const ClientPage = () => {
 
 
 
-      <div className="w-full pt-10 md:px-30 px-12 max-lg:hidden">
+      <div className="w-full pt-5 pb-16 md:px-14 px-12 max-lg:hidden">
         <h1 className="text-center font-bold text-orange-600 text-xl">Frequently Asked Questions</h1>
         <p className="text-center text-slate-500">Common Questions abour shipping delivery and courier services</p>
 

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,9 @@ import { useRouter } from 'next/navigation';
 import { PackageTypeModel, UrgencyModel } from '@/lib/models/all_models';
 import LocationSearch from '@/components/ui/location-search';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import Image from 'next/image';
 
 
 const formSchema = z.object({
@@ -33,8 +35,6 @@ const formSchema = z.object({
   height: z.string().optional(),
   weight: z.string().optional(),
   pickup_date: z.string().min(1, { message: "Pickup Date is required." }),
-  sender_name: z.string().min(1, { message: "Sender name is required." }),
-  sender_phone: z.string().min(1, { message: "Sender phone is required." }),
   sender_address: z.string().min(1, { message: "Pickup location is required." }),
   sender_latLng: z.string().optional(),
   description: z.string().optional(),
@@ -44,6 +44,7 @@ const formSchema = z.object({
   recipient_latLng: z.string().optional(),
   requires_last_mile: z.string().min(1, { message: "Required"}),
   requires_pickup: z.string().min(1, { message: "Required" }),
+  mpesaphone: z.string().min(1, { message: "Mpesa number is required." }),
 })
 
 
@@ -130,7 +131,7 @@ const CreatePackagePage = () => {
 
       case "images":
         setActiveTab(value);
-
+        break;
       case "details":
         if (selectedDelivery == ""){
           toast.error("Delivery Type is required.");
@@ -140,16 +141,16 @@ const CreatePackagePage = () => {
           return;
         }
         setActiveTab(value);
-
+        break;
       case "recipient":
         const detailsValid = await form.trigger([
-          "name", "package_type", "urgency", "is_fragile", "sender_name", "sender_address", "sender_phone", "requires_pickup","pickup_date"
+          "name", "package_type", "urgency", "is_fragile", "sender_address", "requires_pickup","pickup_date"
         ]);
 
         if (detailsValid){
           setActiveTab(value);
         }
-        return null;
+        break;
 
       case "preview":
         const isValid = await form.trigger([
@@ -221,9 +222,10 @@ const CreatePackagePage = () => {
           
           setActiveTab(value);
         }
-        return null;
+        break;
       default:
         setActiveTab(value);
+        break;
     }
    
   }
@@ -253,8 +255,6 @@ const CreatePackagePage = () => {
       height: "",
       weight: "",
       pickup_date: "",
-      sender_name: "",
-      sender_phone: "",
       sender_address: "",
       sender_latLng: "",
       description: "",
@@ -264,7 +264,8 @@ const CreatePackagePage = () => {
       recipient_latLng: "",
       requires_last_mile: "",
       requires_pickup: "",
-    }
+      mpesaphone: "",
+    },
   });
 
   const { setValue } = form;
@@ -284,8 +285,8 @@ const CreatePackagePage = () => {
       formData.append("is_fragile", values.is_fragile);
       formData.append("urgency", values.urgency);
       formData.append("pickup_date", values.pickup_date);
-      formData.append("sender_name", values.sender_name);
-      formData.append("sender_phone", values.sender_phone);
+      formData.append("sender_name", session?.user.name);
+      formData.append("sender_phone", session?.user.phone);
       formData.append("sender_address", values.sender_address);
       
       formData.append("recipient_name", values.recipient_name);
@@ -332,7 +333,7 @@ const CreatePackagePage = () => {
         formData.append("description", values.description);
       }
       
-      const res = await APIServices.post("deliveries/user_packages/", session?.accessToken, formData);
+      const res = await APIServices.post("deliveries/add_order/", session?.accessToken, formData);
       
       if(res.success){
         toast.success("Upload successful!");
@@ -394,9 +395,9 @@ const CreatePackagePage = () => {
     console.log(res);
     if (res.success) {
       setPickupPrice(res.pickup_fee);
-      setEstimatedPrice(res.estimated_fee);
+      setEstimatedPrice(res.base_fee);
       setLastMileFee(res.last_mile_fee);
-      setTotalFee(res.total_fee);
+      setTotalFee(res.estimated_fee);
 
     } else {
       setPricingError(res.message)
@@ -404,12 +405,30 @@ const CreatePackagePage = () => {
   }
 
   return (
-    <section className="min-h-screen md:px-20 px-5">
-      <div className='flex flex-col pt-5'>
-        <h1 className='text-primary font-semibold text-2xl'>Place Order</h1>
-        <p className='text-slate-500'>Ensure you fill all required fields.</p>
+    <section className="min-h-screen">
+
+      <div className="bg-orange-100 flex md:flex-row flex-col justify-between items-center px-12 md:px-30 md:h-[300px] overflow-hidden">
+        <div className="flex-1">
+          <div className="py-10">
+            <h1 className="font-bold text-2xl">Place Order</h1>
+            <p className='text-slate-800'>Ensure you fill all required fields.</p>
+          </div>
+        </div>
+
+        
+        <div className="relative flex-1 h-full overflow-hidden max-md:hidden">
+          <Image
+            src="/icons/avatar.png"
+            alt="EXPA"
+            fill
+            className="object-contain md:object-right"
+            priority
+          />
+        </div>
       </div>
-      <div className='py-8'>
+
+      
+      <div className='py-8 md:px-20 px-5'>
         <Tabs value={activeTab} className="w-full">
           <TabsList className="w-full flex overflow-x-auto scrollbar-hide space-x-2">
             <TabsTrigger value="images">Image & Type</TabsTrigger>
@@ -728,7 +747,8 @@ const CreatePackagePage = () => {
                       )}
                     />
                   </div>
-                  <div>
+
+                  {/* <div>
                     <FormField
                       name="sender_name"
                       control={form.control}
@@ -747,8 +767,8 @@ const CreatePackagePage = () => {
                         </FormItem>
                       )}
                     />
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <FormField
                       name="sender_phone"
                       control={form.control}
@@ -767,7 +787,7 @@ const CreatePackagePage = () => {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 
                 <div className="pt-5">
@@ -926,8 +946,25 @@ const CreatePackagePage = () => {
                     )}
 
                     <div className='pt-8 mx-auto text-center'>
-                      <h1 className="">M-Pesa Payments Number <br/></h1>
-                      <h1>{formValues.sender_phone || "Not Provided"}</h1>
+                      <FormField
+                        control={form.control}
+                        name="mpesaphone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mpesa Payment Number</FormLabel>
+                            <FormControl>
+                              <PhoneInput
+                                international
+                                defaultCountry="KE"
+                                className="border rounded-lg px-3 py-2"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            <FormDescription>MPesa number used for payments.</FormDescription>
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                   <CardFooter className='pt-10 flex flex-row justify-between'>
