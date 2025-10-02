@@ -27,9 +27,7 @@ import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Package Name is required." }),
-  package_type: z.string().min(1, { message: "Package Type is required." }),
   is_fragile: z.string().min(1, {message: "Is package fragile?"}),
-  urgency: z.string().min(1, { message: "Urgency level is required." }),
   length: z.string().optional(),
   width: z.string().optional(),
   height: z.string().optional(),
@@ -55,8 +53,6 @@ const CreatePackagePage = () => {
   const [ previewUrls, setPreviewUrls ] = useState<string[]>([]);
   const [ images, setImages ] = useState<File[]>([]);
   const [ sizeCategories, setSizeCategories ] = useState<SizeCategoryModel[]>([]);
-  const [ urgencyTypes, setUrgencyTypes ] = useState<UrgencyModel[]>([]);
-  const [ packageTypes, setPackageTypes] = useState<PackageTypeModel[]>([]);
   const [ selectedSize, setSelectedSize ] = useState("");
   const [ selectedDelivery, setSelectedDelivery] = useState<string | null>(null);
   const [ distancekm, setDistancekm ] = useState(0);
@@ -82,15 +78,13 @@ const CreatePackagePage = () => {
           throw new Error("You must be logged in!");
         }
 
-        const [sizesData, urgenciesData, packagesData ] = await Promise.all([
+        const [sizesData] = await Promise.all([
           APIServices.get('deliveries/size_category/', session?.accessToken),
-          APIServices.get('deliveries/urgency_types/', session?.accessToken),
-          APIServices.get('deliveries/package_types/', session?.accessToken),
+          // APIServices.get('deliveries/urgency_types/', session?.accessToken),
+          // APIServices.get('deliveries/package_types/', session?.accessToken),
         ]);
         
         setSizeCategories(sizesData);
-        setUrgencyTypes(urgenciesData);
-        setPackageTypes(packagesData);
       } catch(e){
         toast.error("An error occured, "+e);
       }
@@ -144,7 +138,7 @@ const CreatePackagePage = () => {
         break;
       case "recipient":
         const detailsValid = await form.trigger([
-          "name", "package_type", "urgency", "is_fragile", "sender_address", "requires_pickup","pickup_date"
+          "name", "is_fragile", "sender_address", "requires_pickup","pickup_date"
         ]);
 
         if (detailsValid){
@@ -247,9 +241,7 @@ const CreatePackagePage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      package_type: "",
       is_fragile: "",
-      urgency: "",
       length: "",
       width: "",
       height: "",
@@ -281,9 +273,7 @@ const CreatePackagePage = () => {
       const formData = new FormData();
       formData.append("size_category", selectedSize);
       formData.append("name", values.name);
-      formData.append("package_type", values.package_type);
       formData.append("is_fragile", values.is_fragile);
-      formData.append("urgency", values.urgency);
       formData.append("pickup_date", values.pickup_date);
       formData.append("sender_name", session?.user.name);
       formData.append("sender_phone", session?.user.phone);
@@ -295,6 +285,7 @@ const CreatePackagePage = () => {
       
       formData.append("requires_pickup", values.requires_pickup);
       formData.append("requires_last_mile", values.requires_last_mile);
+      formData.append("payment_phone", values.mpesaphone);
       
 
       if(estimatedPrice){
@@ -505,7 +496,7 @@ const CreatePackagePage = () => {
                   <p className='text-slate-400'>Fill all required form fields</p>
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4'>
-                    <div className='col-span-5'>
+                    <div className='col-span-9'>
                       <FormField
                         control={form.control}
                         name="name"
@@ -525,37 +516,14 @@ const CreatePackagePage = () => {
                         )}
                       />
                     </div>
+                    
                     <div className='col-span-3'>
-                      <FormField
-                        control={form.control}
-                        name="package_type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Package Type</FormLabel>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className='w-full'>
-                                  <SelectValue placeholder="Choose option" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {packageTypes.map((item) => (
-                                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className='col-span-2'>
                       <FormField
                         control={form.control}
                         name="is_fragile"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Is fragile?</FormLabel>
+                            <FormLabel>Fragile?</FormLabel>
                             <FormControl>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className='w-full'>
@@ -572,30 +540,7 @@ const CreatePackagePage = () => {
                         )}
                       />
                     </div>
-                    <div className='col-span-2'>
-                      <FormField
-                        control={form.control}
-                        name="urgency"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Urgency</FormLabel>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className='w-full'>
-                                  <SelectValue placeholder="Choose option" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {urgencyTypes.map((item) => (
-                                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    
                 </div>
 
                 
@@ -796,7 +741,7 @@ const CreatePackagePage = () => {
                     control={form.control}
                     render={({field}) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Description (optional)</FormLabel>
                         <FormControl>
                           <Textarea placeholder='Enter description here ...' {...field}></Textarea>
                         </FormControl>

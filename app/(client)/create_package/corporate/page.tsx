@@ -129,10 +129,10 @@ const CorporatePackageOrder = () => {
         switch (value) {
             case "documents":
                 setActiveTab(value);
-                
+                break;
             case "details":
                 setActiveTab(value);
-
+                break;
             case "items":
                 const detailsValidation = await form.trigger([
                     "name", "package_type", "is_fragile", "urgency", "vehicle_type", "weight", "recipient_name", "recipient_phone", "recipient_address"
@@ -141,8 +141,7 @@ const CorporatePackageOrder = () => {
                 if (detailsValidation) {
                     setActiveTab(value);
                 }
-
-                return null;
+                break;
             case "prices":
                 setActiveTab(value);
 
