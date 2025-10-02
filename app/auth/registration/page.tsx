@@ -77,7 +77,7 @@ const RegistrationPage = () => {
                         <div className="flex flex-col items-center justify-center ">
                             <Image src="/icons/auth.png" className="" width={400} height={100} alt="" />
                             <div className="flex flex-col py-6 md:block max-md:hidden">
-                                <h1 className='text-center text-xl text-primary font-bold pb-5'>Welcome To Express Parcel - EXPA</h1>
+                                <h1 className='text-center text-xl text-primary font-bold pb-5'>Welcome To Express Parcel - ExPa</h1>
                                 <p className="text-center">Fast, reliable deliveries at your fingertips. Sign in or create an account to begin.</p>
                             </div>
                         </div>
