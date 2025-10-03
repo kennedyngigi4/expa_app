@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Form, FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormControl, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import LocationSearch from '@/components/ui/location-search';
 import { APIServices } from '@/lib/utils/api_services';
 import { useSession } from 'next-auth/react';
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+
 
 
 const fullLoadSchema = z.object({
@@ -21,6 +24,7 @@ const fullLoadSchema = z.object({
     destination: z.string().min(1, "Destination is required."),
     destination_latLng: z.string(),
     weight: z.string().min(1, "Weight is required."),
+    mpesaphone: z.string().min(1, "MPesa number is required"),
 });
 
 const FullLoadsForm = () => {
@@ -29,6 +33,7 @@ const FullLoadsForm = () => {
     const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
     const [distance, setDistance] = useState();
     const [loadingPrice, setLoadingPrice] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async() => {
@@ -49,6 +54,7 @@ const FullLoadsForm = () => {
             destination: "",
             destination_latLng: "",
             weight: "",
+            mpesaphone: "",
         }
     });
     const { isValid, isSubmitting } = form.formState;
@@ -78,6 +84,7 @@ const FullLoadsForm = () => {
                 formData.append("weight", weight);
                 formData.append("origin_latLng", origin_latLng);
                 formData.append("destination_latLng", destination_latLng);
+               
 
                 const resp = await APIServices.post("fullloads/price_calculator/", session.accessToken, formData);
                 console.log(resp);
@@ -99,23 +106,26 @@ const FullLoadsForm = () => {
     }, [vehicle, origin_latLng, destination_latLng, weight, session]);
 
     const onSubmit = async(values: z.infer<typeof fullLoadSchema>) => {
-        console.log(values);
+        setLoading(true);
         if (!session?.accessToken) return;
 
         const formData = new FormData();
         formData.append("vehicle", values.vehicle_type);
         formData.append("weight", values.weight);
         formData.append("pickup_address", values.origin);
+        formData.append("pickup_latLng", values.origin_latLng);
         formData.append("dropoff_address", values.destination);
         formData.append("price", calculatedPrice?.toString());
         formData.append("distance", distance?.toString());
-        
+        formData.append("payment_phone", values.mpesaphone);
 
         const resp = await APIServices.post("fullloads/book-fullload/", session?.accessToken, formData);
         if(resp["success"]){
             toast.success(resp["message"]);
             window.location.reload();
+            setLoading(false);
         } else {
+            setLoading(false);
             toast.error("An error occured.");
         }
     }
@@ -211,14 +221,37 @@ const FullLoadsForm = () => {
 
                     {/* Price Preview */}
                     {calculatedPrice !== null && (
-                        <div className="text-lg font-semibold text-orange-600">
-                            Estimated Price: KES {calculatedPrice.toLocaleString()}
+                        <div>
+                            <div className="text-lg font-semibold text-orange-600">
+                                Estimated Price: KES {calculatedPrice.toLocaleString()}
+                            </div>
+                            <div>
+                                <FormField
+                                    control={form.control}
+                                    name="mpesaphone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Mpesa Payment Number</FormLabel>
+                                            <FormControl>
+                                                <PhoneInput
+                                                    international
+                                                    defaultCountry="KE"
+                                                    className="border rounded-lg px-3 py-2"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                            <FormDescription>MPesa number used for payments.</FormDescription>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                     )}
                     {loadingPrice && <p className="text-sm text-gray-500">Calculating price...</p>}
 
                     <div className='w-full pb-8'>
-                        <Button type='submit' className='w-full cursor-pointer'>Book Now</Button>
+                        <Button type='submit' disabled={loading || isSubmitting} className='w-full cursor-pointer'>Book Now</Button>
                     </div>
                 </form>
             </Form>

@@ -87,6 +87,11 @@ const managerRoutes = [
         href: "/dashboard/manager/invoices",
     },
     {
+        icon: File,
+        label: "Fullloads",
+        href: "/dashboard/manager/fullloads",
+    },
+    {
         icon: OctagonAlert,
         label: "Reports",
         href: "/dashboard/manager/reports",

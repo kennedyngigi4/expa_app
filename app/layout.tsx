@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Express Parcel - EXPA",
+  title: "Express Parcel - ExPa",
   description: "Cargo and parcel deliveries",
   icons: {
     icon: '/favicon.ico',
