@@ -23,6 +23,7 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import Image from 'next/image';
+import { Label } from '@/components/ui/label';
 
 
 const formSchema = z.object({
@@ -40,9 +41,12 @@ const formSchema = z.object({
   recipient_phone: z.string().min(1, { message: "Recipient phone is required." }),
   recipient_address: z.string().min(1, { message: "Recipient address is required." }),
   recipient_latLng: z.string().optional(),
-  requires_last_mile: z.string().min(1, { message: "Required"}),
-  requires_pickup: z.string().min(1, { message: "Required" }),
+  requires_last_mile: z.string().optional(),
   mpesaphone: z.string().min(1, { message: "Mpesa number is required." }),
+  cardholder_name: z.string().optional(),
+  card_number: z.string().optional(),
+  card_expiry: z.string().optional(),
+  card_cvc: z.string().optional(),
 })
 
 
@@ -61,6 +65,9 @@ const CreatePackagePage = () => {
   const [ lastMileFee, setLastMileFee ] = useState(0);
   const [ totalFee, setTotalFee] = useState(0);
   const [pricingError, setPricingError] = useState("");
+  const [pickupNow, setPickupNow] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("mpesa");
+  
   
 
   useEffect(() => {
@@ -137,9 +144,8 @@ const CreatePackagePage = () => {
         setActiveTab(value);
         break;
       case "recipient":
-        const detailsValid = await form.trigger([
-          "name", "is_fragile", "sender_address", "requires_pickup","pickup_date"
-        ]);
+        
+        const detailsValid = await form.trigger(["name", "is_fragile", "sender_address", "pickup_date"]);
 
         if (detailsValid){
           setActiveTab(value);
@@ -162,7 +168,7 @@ const CreatePackagePage = () => {
         if (isValid) {
           const formData = form.getValues();
 
-          console.log(selectedDelivery);
+          
 
           if (selectedDelivery == "intra_city"){
             if(selectedSize == "1"){
@@ -197,7 +203,7 @@ const CreatePackagePage = () => {
                 width: "1",
                 height: "1",
                 requires_last_mile: formData.requires_last_mile,
-                requires_pickup: formData.requires_pickup,
+                requires_pickup: "true",
               });
             } else if (selectedSize == "2") {
               intercountyPriceCalculator({
@@ -209,7 +215,7 @@ const CreatePackagePage = () => {
                 width: formData.width,
                 height: formData.height,
                 requires_last_mile: formData.requires_last_mile,
-                requires_pickup: formData.requires_pickup,
+                requires_pickup: "true",
               });
             }
           }
@@ -255,15 +261,20 @@ const CreatePackagePage = () => {
       recipient_address: "",
       recipient_latLng: "",
       requires_last_mile: "",
-      requires_pickup: "",
       mpesaphone: "",
+      cardholder_name: "",
+      card_number: "",
+      card_expiry: "",
+      card_cvc: "",
     },
+    shouldUnregister: false,
   });
-
+  const { isSubmitting } = form.formState;
   const { setValue } = form;
   const formValues = form.watch();
 
   const onSubmit = async(values: z.infer<typeof formSchema>) => {
+    console.log("Uploading .....");
 
     if(!session?.accessToken){
       throw new Error("You must be logged in.");
@@ -274,7 +285,7 @@ const CreatePackagePage = () => {
       formData.append("size_category", selectedSize);
       formData.append("name", values.name);
       formData.append("is_fragile", values.is_fragile);
-      formData.append("pickup_date", values.pickup_date);
+      formData.append("pickup_date", pickupNow ? new Date().toISOString() : String(values.pickup_date));
       formData.append("sender_name", session?.user.name);
       formData.append("sender_phone", session?.user.phone);
       formData.append("sender_address", values.sender_address);
@@ -283,9 +294,11 @@ const CreatePackagePage = () => {
       formData.append("recipient_phone", values.recipient_phone);
       formData.append("recipient_address", values.recipient_address);
       
-      formData.append("requires_pickup", values.requires_pickup);
-      formData.append("requires_last_mile", values.requires_last_mile);
+      formData.append("requires_pickup", "true");
+      formData.append("requires_last_mile", selectedDelivery === "intra_city" ? "true" : String(values.requires_last_mile ?? ""));
       formData.append("payment_phone", values.mpesaphone);
+      formData.append("payment_method", paymentMethod);
+      
       
 
       if(estimatedPrice){
@@ -323,9 +336,29 @@ const CreatePackagePage = () => {
       if (values.description) {
         formData.append("description", values.description);
       }
+
+      if(pickupNow){
+        formData.append("pickup_now", String(pickupNow));
+      }
+
+      if(values.cardholder_name){
+        formData.append("cardholder_name", values.cardholder_name);
+      }
+
+      if(values.card_number){
+        formData.append("card_number", values.card_number);
+      }
+
+      if(values.card_expiry){
+        formData.append("card_expiry", values.card_expiry);
+      }
+
+      if(values.card_cvc){
+        formData.append("card_cvc", values.card_cvc);
+      }
       
       const res = await APIServices.post("deliveries/add_order/", session?.accessToken, formData);
-      
+      console.log(res);
       if(res.success){
         toast.success("Upload successful!");
         router.push("/packages");
@@ -636,29 +669,10 @@ const CreatePackagePage = () => {
 
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-5 pt-5'>
                   <div>
-                    <FormField 
-                      name="requires_pickup"
-                      control={form.control}
-                      render={({field}) => (
-                        <FormItem>
-                          <FormLabel>Schedule Pickup</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger className='w-full'>
-                                <SelectValue placeholder="Choose option" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="false">No</SelectItem>
-                                <SelectItem value="true">Yes</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <Label className='pb-1'>Pickup now or later?</Label>
+                    <Button variant={pickupNow ? "default" : "outline"} className='cursor-pointer' type='button' onClick={() => setPickupNow(prev => !prev)}>Pickup Now</Button>
                   </div>
-                  <div>
+                  <div className="">
                     <FormField
                       name="pickup_date"
                       control={form.control}
@@ -692,47 +706,6 @@ const CreatePackagePage = () => {
                       )}
                     />
                   </div>
-
-                  {/* <div>
-                    <FormField
-                      name="sender_name"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Sender Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder='e.g. John Doe'
-                              className='bg-white'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div> */}
-                  {/* <div>
-                    <FormField
-                      name="sender_phone"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Sender Phone</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder='254722.....'
-                              className='bg-white'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div> */}
                 </div>
                 
                 <div className="pt-5">
@@ -818,31 +791,33 @@ const CreatePackagePage = () => {
                 </div>
 
 
-
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-5 pt-5'>
-                  <div>
-                    <FormField
-                      name="requires_last_mile"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Delivery Method</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger className='w-full'>
-                                <SelectValue placeholder="Choose the delivery method" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="true">Door Delivery</SelectItem>
-                                <SelectItem value="false">Pickup from Office</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                {selectedDelivery != "intra_city" && (
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-5 pt-5'>
+                    <div>
+                      <FormField
+                        name="requires_last_mile"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Delivery Method</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className='w-full'>
+                                  <SelectValue placeholder="Choose the delivery method" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">Door Delivery</SelectItem>
+                                  <SelectItem value="false">Pickup from Office</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
+                
 
                 <div className='py-5 flex space-x-15'>
                   <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("details")}><ArrowLeft /> Back</Button>
@@ -859,15 +834,7 @@ const CreatePackagePage = () => {
                       Proceed with payments.
                     </CardDescription>
                     <CardAction>
-                      <Select value='mpesa'>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose payment option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="mpesa">M-Pesa</SelectItem>
-                          <SelectItem value="airtel">Airtel Money</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      
                     </CardAction>
                   </CardHeader>
                   <CardContent>
@@ -892,25 +859,128 @@ const CreatePackagePage = () => {
                     )}
 
                     <div className='pt-8 mx-auto text-center'>
-                      <FormField
-                        control={form.control}
-                        name="mpesaphone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Mpesa Payment Number</FormLabel>
-                            <FormControl>
-                              <PhoneInput
-                                international
-                                defaultCountry="KE"
-                                className="border rounded-lg px-3 py-2"
-                                {...field}
+                      <Label className='pb-2'>Pay with</Label>
+                      <Select value={paymentMethod} onValueChange={(e) => setPaymentMethod(e)}>
+                        <SelectTrigger className="mb-5">
+                          <SelectValue placeholder="Choose payment option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="mpesa">MPesa</SelectItem>
+                          <SelectItem value="card">Card</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {paymentMethod == "mpesa" ? (
+                        <FormField
+                          control={form.control}
+                          name="mpesaphone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Mpesa number</FormLabel>
+                              <FormControl>
+                                <PhoneInput
+                                  international
+                                  defaultCountry="KE"
+                                  className="border rounded-lg px-3 py-2"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                              <FormDescription>MPesa number used for payments.</FormDescription>
+                            </FormItem>
+                          )}
+                        />
+                      ) : (
+                        <div className='flex flex-col space-y-4'>
+                          <FormField 
+                            control={form.control}
+                            name="cardholder_name"
+                            render={({field}) => (
+                              <FormItem>
+                                <FormLabel>Cardholder name</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="text"
+                                    placeholder='e.g. John Doe'
+                                    className='bg-white'
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="card_number"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Card number</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder=''
+                                    className='bg-white'
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className='grid grid-cols-2 gap-5'>
+                            <div>
+                                <FormField
+                                  control={form.control}
+                                  name="card_expiry"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Card Expiry</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="text"
+                                          placeholder='e.g 12/30'
+                                          className='bg-white'
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+
+                                    </FormItem>
+                                  )}
+                                />
+                            </div>
+                            <div>
+                              <FormField
+                                control={form.control}
+                                name="card_cvc"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Card cvc</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="text"
+                                        placeholder='e.g 123'
+                                        className='bg-white'
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+
+                                  </FormItem>
+                                )}
                               />
-                            </FormControl>
-                            <FormMessage />
-                            <FormDescription>MPesa number used for payments.</FormDescription>
-                          </FormItem>
-                        )}
-                      />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+
+
                     </div>
                   </CardContent>
                   <CardFooter className='pt-10 flex flex-row justify-between'>
@@ -918,7 +988,9 @@ const CreatePackagePage = () => {
                       <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("recipient")}><ArrowLeft /> Back</Button>
                       
                       {(estimatedPrice != 0 || totalFee != 0) ? (
-                        <Button type="submit" className='bg-orange-400 cursor-pointer'>Submit</Button>
+                        <Button type="submit" disabled={isSubmitting} className='bg-orange-400 cursor-pointer'>
+                          {isSubmitting ? "Processing ..." : "Submit"}
+                        </Button>
                       ) : (
                         <p className='text-red-500'>{pricingError}</p>
                       )}
