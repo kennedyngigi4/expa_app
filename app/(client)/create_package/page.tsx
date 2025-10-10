@@ -267,14 +267,13 @@ const CreatePackagePage = () => {
       card_expiry: "",
       card_cvc: "",
     },
-    shouldUnregister: false,
   });
   const { isSubmitting } = form.formState;
   const { setValue } = form;
   const formValues = form.watch();
 
   const onSubmit = async(values: z.infer<typeof formSchema>) => {
-    console.log("Uploading .....");
+    console.log("Uploading .....", totalFee);
 
     if(!session?.accessToken){
       throw new Error("You must be logged in.");
@@ -301,8 +300,8 @@ const CreatePackagePage = () => {
       
       
 
-      if(estimatedPrice){
-        formData.append("fees", estimatedPrice);
+      if(totalFee){
+        formData.append("fees", totalFee);
       }
 
       if (values.sender_latLng){
@@ -388,9 +387,9 @@ const CreatePackagePage = () => {
       }
 
       const res = await APIServices.intracity("deliveries/intracity_pricing/", session?.accessToken, payload);
-      console.log(res.estimated_fee);
+      console.log(res);
       if(res.success){
-        setEstimatedPrice(res.estimated_fee);
+        setTotalFee(res.total_fee);
         setDistancekm(res.distance_km);
       } else {
         setPricingError(res.message)
@@ -421,7 +420,7 @@ const CreatePackagePage = () => {
       setPickupPrice(res.pickup_fee);
       setEstimatedPrice(res.base_fee);
       setLastMileFee(res.last_mile_fee);
-      setTotalFee(res.estimated_fee);
+      setTotalFee(res.total_fee);
 
     } else {
       setPricingError(res.message)
@@ -840,7 +839,7 @@ const CreatePackagePage = () => {
                   <CardContent>
                     {selectedDelivery == "intra_city" && (
                       <div className='space-y-5'>
-                        <h1 className="flex flex-row justify-between items-center">Estimated Fee <span>{estimatedPrice}</span></h1>
+                        <h1 className="flex flex-row justify-between items-center">Estimated Fee <span>{totalFee.toLocaleString()}</span></h1>
                         <h1 className="flex flex-row justify-between items-center">Distance in Kms <span>{distancekm}kms</span></h1>
                       </div>
                     )}
