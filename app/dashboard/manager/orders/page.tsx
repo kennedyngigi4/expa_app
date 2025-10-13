@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 
 const OrdersPage = () => {
   const { data:session } = useSession();
-  const [category, setCategory] = useState("unassigned");
+  const [category, setCategory] = useState("all");
   const [ orders, setOrders ]= useState<PackageModel[]>([]);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const OrdersPage = () => {
         throw new Error("You must be loggedin.");
       }
 
-      const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}`, session?.accessToken);
+      const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}&delivery_type=inter_county`, session?.accessToken);
       console.log(data);
       setOrders(data);
     }
@@ -36,7 +36,7 @@ const OrdersPage = () => {
       </div>
 
       <div className="flex space-x-2 mb-4">
-        {["unassigned", "received", "assigned", "incoming", "in_transit", "delivered", "all"].map((cat) => (
+        {["all", "pending", "assigned", "in_transit", "received", "incoming", "delivered"].map((cat) => (
           <Button
             key={cat}
             variant={category === cat ? "default" : "outline"}

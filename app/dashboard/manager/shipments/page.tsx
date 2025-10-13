@@ -11,7 +11,7 @@ import { ShipmentModel } from '@/lib/models/all_models';
 const ShipmentsPage = () => {
   const {data:session} = useSession();
   const [shipments, setShipments] = useState<ShipmentModel[]>([]);
-  const [category, setCategory ]= useState("assigned");
+  const [category, setCategory ]= useState("all");
 
   useEffect(() => {
     const fetchData = async() => {
@@ -34,7 +34,7 @@ const ShipmentsPage = () => {
 
 
       <div className='flex space-x-2.5 mb-5'>
-        {["assigned", "IN_TRANSIT", "RECEIVED", "DELIVERED", "RETURNED", "CANCELLED", "ALL"].map((cat) => (
+        {["all", "assigned", "in_transit", "delivered", "received",  "returned", "cancelled"].map((cat) => (
           <Button 
             key={cat}
             variant={category === cat ? "default" : "outline"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout, OctagonAlert, Package, Truck, File, Warehouse, Users, CarFront, SignpostBigIcon, Contact, Boxes, Landmark, SlidersHorizontal, Bell } from 'lucide-react';
+import { Layout, OctagonAlert, Package, Truck, File, Warehouse, Users, CarFront, SignpostBigIcon, Contact, Boxes, Landmark, SlidersHorizontal, Bell, Route, Archive, PackageCheck, PackagePlus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import SidebarItem from './sidebar-item';
 import { useSession } from 'next-auth/react';
@@ -67,29 +67,34 @@ const managerRoutes = [
         href: "/dashboard/manager",
     },
     {
-        icon: Package,
+        icon: Route,
+        label: "Intracity",
+        href: "/dashboard/manager/intracity",
+    },
+    {
+        icon: Boxes,
         label: "Orders",
         href: "/dashboard/manager/orders",
     },
     {
-        icon: Truck,
+        icon: PackagePlus,
         label: "Shipments",
         href: "/dashboard/manager/shipments",
     },
     {
-        icon: Truck,
+        icon: PackageCheck,
         label: "Incoming Shipments",
         href: "/dashboard/manager/incoming-shipments",
+    },
+    {
+        icon: Truck,
+        label: "Fullloads",
+        href: "/dashboard/manager/fullloads",
     },
     {
         icon: File,
         label: "Invoices",
         href: "/dashboard/manager/invoices",
-    },
-    {
-        icon: File,
-        label: "Fullloads",
-        href: "/dashboard/manager/fullloads",
     },
     {
         icon: OctagonAlert,
