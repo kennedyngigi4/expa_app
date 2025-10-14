@@ -24,9 +24,7 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Package Name is required." }),
-  package_type: z.string().min(1, { message: "Package Type is required." }),
   is_fragile: z.string().min(1, {message: "Is package fragile?"}),
-  urgency: z.string().min(1, { message: "Urgency level is required." }),
   length: z.string().optional(),
   width: z.string().optional(),
   height: z.string().optional(),
@@ -112,9 +110,7 @@ const CreateOrderPage = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            package_type: "",
             is_fragile: "",
-            urgency: "",
             length: "",
             width: "",
             height: "",
@@ -136,6 +132,7 @@ const CreateOrderPage = () => {
         switch(value){
           case "images":
             setActiveTab(value);
+            break;
           case "details":
             if (selectedDelivery == ""){
               toast.error("Delivery Type is required.");
@@ -145,15 +142,16 @@ const CreateOrderPage = () => {
               return;
             }
             setActiveTab(value);
+            break;
           case "recipient":
             const detailsValid = await form.trigger([
-              "name", "package_type", "urgency", "is_fragile", "sender_name", "sender_phone"
+              "name", "is_fragile", "sender_name", "sender_phone"
             ]);
     
             if (detailsValid){
               setActiveTab(value);
             }
-            return null;
+            break;
           case "preview":
             const isValid = await form.trigger([
               "recipient_name",
@@ -207,7 +205,7 @@ const CreateOrderPage = () => {
                   });
                 } else {
                   intercountyPriceCalculator({
-                    // sender_latLng: formData.sender_latLng,
+                    
                     recipient_latLng: formData.recipient_latLng,
                     size_category: selectedSize,
                     weight: formData.weight,
@@ -222,9 +220,10 @@ const CreateOrderPage = () => {
               
               setActiveTab(value);
             }
-            return null;
+            break;
           default:
             setActiveTab(value);
+            break;
         }
        
     }
@@ -241,6 +240,7 @@ const CreateOrderPage = () => {
     }
 
     const onSubmit = async(values: z.infer<typeof formSchema>) => {
+    
         try{
 
             if(!session?.accessToken){
@@ -250,9 +250,7 @@ const CreateOrderPage = () => {
             const formData = new FormData();
             formData.append("size_category", selectedSize);
             formData.append("name", values.name);
-            formData.append("package_type", values.package_type);
             formData.append("is_fragile", values.is_fragile);
-            formData.append("urgency", values.urgency);
             formData.append("sender_name", values.sender_name);
             formData.append("sender_phone", values.sender_phone);
             formData.append("recipient_name", values.recipient_name);
@@ -443,7 +441,7 @@ const CreateOrderPage = () => {
                                               <p className='text-slate-400'>Fill all required form fields</p>
                                             </div>
                                             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4'>
-                                                <div className='col-span-5'>
+                                                <div className='col-span-10'>
                                                   <FormField
                                                     control={form.control}
                                                     name="name"
@@ -463,30 +461,7 @@ const CreateOrderPage = () => {
                                                     )}
                                                   />
                                                 </div>
-                                                <div className='col-span-3'>
-                                                  <FormField
-                                                    control={form.control}
-                                                    name="package_type"
-                                                    render={({ field }) => (
-                                                      <FormItem>
-                                                        <FormLabel>Package Type</FormLabel>
-                                                        <FormControl>
-                                                          <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className='w-full'>
-                                                              <SelectValue placeholder="Choose option" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                              {packageTypes.map((item) => (
-                                                                <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                                              ))}
-                                                            </SelectContent>
-                                                          </Select>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                      </FormItem>
-                                                    )}
-                                                  />
-                                                </div>
+                                                
                                                 <div className='col-span-2'>
                                                   <FormField
                                                     control={form.control}
@@ -510,30 +485,7 @@ const CreateOrderPage = () => {
                                                     )}
                                                   />
                                                 </div>
-                                                <div className='col-span-2'>
-                                                  <FormField
-                                                    control={form.control}
-                                                    name="urgency"
-                                                    render={({ field }) => (
-                                                      <FormItem>
-                                                        <FormLabel>Urgency</FormLabel>
-                                                        <FormControl>
-                                                          <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className='w-full'>
-                                                              <SelectValue placeholder="Choose option" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                              {urgencyTypes.map((item) => (
-                                                                <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                                              ))}
-                                                            </SelectContent>
-                                                          </Select>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                      </FormItem>
-                                                    )}
-                                                  />
-                                                </div>
+                                                
                                             </div>
                             
                                             
