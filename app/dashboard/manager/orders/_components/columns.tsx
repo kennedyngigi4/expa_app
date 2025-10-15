@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 export const columns: ColumnDef<PackageModel>[] = [
     {
@@ -121,7 +122,14 @@ export const columns: ColumnDef<PackageModel>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-          },
+        },
+        cell: ({row}) => {
+            const isPaid = row?.original?.is_paid;
+
+            return (
+                <p className={cn("text-red-500", isPaid && "text-green-500")}>{isPaid ? "Paid" : "Unpaid"}</p>
+            )
+        }
     },
     {
         accessorKey: "recipient_address",

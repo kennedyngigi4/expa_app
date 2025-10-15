@@ -49,10 +49,10 @@ export const columns: ColumnDef<ShipmentModel>[] = [
             )
         },
     },
-    {
-        accessorKey: "originoffice",
-        header: "Origin Office",
-    },
+    // {
+    //     accessorKey: "originoffice",
+    //     header: "Origin Office",
+    // },
     {
         accessorKey: "packages.length",
         header: "Packages",

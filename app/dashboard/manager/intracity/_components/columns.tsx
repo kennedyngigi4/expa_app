@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { PackageModel } from "@/lib/models/all_models"
+import { cn } from "@/lib/utils"
 import { Checkbox } from "@radix-ui/react-checkbox"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
@@ -123,6 +124,13 @@ export const columns: ColumnDef<PackageModel>[] = [
                 </Button>
             )
         },
+        cell: ({row}) => {
+            const isPaid = row?.original?.is_paid;
+
+            return (
+                <p className={cn("text-red-500", isPaid && "text-green-500")}>{isPaid ? "Paid" : "Unpaid"}</p>
+            )
+        }
     },
     {
         accessorKey: "recipient_address",
