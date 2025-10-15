@@ -19,6 +19,7 @@ const IntracityPage = () => {
         throw new Error("You must be loggedin.");
         }
 
+        
         const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}&delivery_type=intra_city`, session?.accessToken);
         console.log();
         setOrders(data);

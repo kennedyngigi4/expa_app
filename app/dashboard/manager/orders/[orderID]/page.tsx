@@ -73,14 +73,7 @@ const OrderDetailsPage = () => {
                     <h1><span className='text-xs'>Size Category</span></h1>
                     <h1 className='capitalize'>{packageData?.size_category_name}</h1>
                 </div>
-                <div>
-                    <h1><span className='text-xs'>Package Type</span></h1>
-                    <h1 className='capitalize'>{packageData?.package_type_name.replace("_", " ")}</h1>
-                </div>
-                <div>
-                    <h1><span className='text-xs'>Urgency</span></h1>
-                    <h1 className='capitalize'>{packageData?.urgency_name}</h1>
-                </div>
+                
                 <div>
                     <h1><span className='text-xs'>Fragile?</span></h1>
                     <h1 className='capitalize'>{packageData?.is_fragile ? "Yes" : "No"}</h1>

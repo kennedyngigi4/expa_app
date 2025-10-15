@@ -82,6 +82,11 @@ const managerRoutes = [
         href: "/dashboard/manager/shipments",
     },
     {
+        icon: Boxes,
+        label: "Incoming Orders",
+        href: "/dashboard/manager/incoming-orders",
+    },
+    {
         icon: PackageCheck,
         label: "Incoming Shipments",
         href: "/dashboard/manager/incoming-shipments",
