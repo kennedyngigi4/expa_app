@@ -9,7 +9,7 @@ const DownloadsPage = () => {
         <section className="grid md:grid-cols-3 grid-cols-2 gap-15">
             <div className='shadow-lg p-10 rounded-2xl space-y-8'>
                 <h2 className='font-semibold'>ExPa Customer App</h2>
-                <a href="/downloads/expa_kenya.apk">
+                <a href="/downloads/expa_customer.apk">
                     <Button className='cursor-pointer'>Click to Download</Button>
                 </a>
             </div>
@@ -21,7 +21,7 @@ const DownloadsPage = () => {
             </div>
             <div className='shadow-lg p-10 rounded-2xl space-y-8'>
                 <h2 className='font-semibold'>ExPa Driver App</h2>
-                <a href="">
+                <a href="/downloads/expa_driver.apk">
                     <Button className='cursor-pointer'>Click to Download</Button>
                 </a>
             </div>
