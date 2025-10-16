@@ -16,6 +16,7 @@ import Link from "next/link";
 import ConfirmPaymentsModal from "@/components/modals/confirm_payments";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export const CorporateColumns: ColumnDef<PackageModel>[] = [
     {
@@ -51,23 +52,13 @@ export const CorporateColumns: ColumnDef<PackageModel>[] = [
         header: "Destination",
     },
     {
-        accessorKey: "",
+        accessorKey: "is_paid",
         header: "Payments",
         cell: ({row}) => {
-            const packageid = row.getValue("package_id");
+            const isPaid = row?.original?.is_paid
 
             return (
-                <ConfirmPaymentsModal title="Confirm Payments" subtitle={packageid}>
-                    <div className="flex flex-col space-y-3.5">
-                        <div>
-                            <Label className="pb-1">MPESA Code</Label>
-                            <Input type="text" className="bg-white" placeholder="e.g. TFM1V9VNHF" />
-                        </div>
-                        <div className="w-full">
-                            <Button className="w-full">Confirm</Button>
-                        </div>
-                    </div>
-                </ConfirmPaymentsModal>
+                <p className={cn("text-red-500", isPaid && "text-green-500")}>{isPaid ? "Paid" : "Unpaid"}</p>
             );
         }
     },

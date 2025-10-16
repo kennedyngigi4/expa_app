@@ -26,28 +26,65 @@ const LiveLocation = ({ riderLocations }) => {
     });
 
 
+    const fetchData = async () => {
+        if (!session?.accessToken) return;
+
+        const roles = ['driver', 'partner_rider']
+        const query = roles.map(r => `role=${r}`).join('&');
+
+        const data = await APIServices.get(`account/superadmin/users/?${query}`, session?.accessToken);
+
+        setDrivers(data || []);
+    };
+
     useEffect(() => {
-        const fetchData = async() => {
-            if(!session?.accessToken){
-                throw new Error("You must be logged in.");
-            }
-
-            const roles = ['driver', 'partner_rider']
-            const query = roles.map(r => `role=${r}`).join('&');
-
-            const data = await APIServices.get(`account/superadmin/users/?${query}`, session?.accessToken);
-            
-            setDrivers(data);
-        }
         fetchData();
+
+        const interval = setInterval(fetchData, 60000);
+        return () => clearInterval(interval);
     }, [session]);
 
     if (!isLoaded) return <Loader />;
 
-    return (
-        <section>
-            <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
+    const icons = {
+        partner_rider: "/icons/bike.png",
+        driver: "/icons/truck.png"
+    }
 
+    return (
+        <section className="w-full h-full">
+            <GoogleMap 
+                mapContainerStyle={containerStyle} 
+                center={center} 
+                zoom={13}
+                options={{ streetViewControl: false, mapTypeControl: false}}    
+            >
+                {drivers.map((driver, index) => {
+                    const location = driver.location;
+                    if(!location?.latitude || !location?.longitude) return null;
+
+                    const iconUrl = driver.role === "partner_rider" ? icons.partner_rider : icons.driver;
+
+                    return(
+                        
+                        <Marker
+                            key={index}
+                            position={{
+                                lat: parseFloat(driver.location.latitude),
+                                lng: parseFloat(driver.location.longitude),
+                            }}
+                            label={{
+                                text: driver.full_name || "",
+                                className: "text-black text-xs bg-white px-0 rounded",
+                            }}
+                            icon={{
+                                url: iconUrl,
+                                scaledSize: new window.google.maps.Size(65, 65),
+                            }}
+                        />
+                        
+                    );
+                })}
             </GoogleMap>
         </section>
     );

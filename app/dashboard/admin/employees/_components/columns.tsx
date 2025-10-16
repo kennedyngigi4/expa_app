@@ -2,6 +2,7 @@
 
 import { UserModel } from "@/lib/models/user_model"
 import { ColumnDef } from "@tanstack/react-table"
+import { MoreHorizontal } from "lucide-react";
 
 export const columns: ColumnDef<UserModel>[] = [
     {
@@ -32,5 +33,10 @@ export const columns: ColumnDef<UserModel>[] = [
     {
         accessorKey: "",
         header: "Action",
+        cell: ({ row }) => {
+            return (
+                <MoreHorizontal />
+            );
+        }
     },
 ]

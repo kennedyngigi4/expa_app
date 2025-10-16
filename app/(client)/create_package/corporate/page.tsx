@@ -28,9 +28,7 @@ const itemSchema = z.object({
 
 const formSchema = z.object({
     name: z.string().min(4, { message: "Name must be at least 4 characters"}),
-    package_type: z.string(),
     is_fragile: z.string(),
-    urgency: z.string(),
     weight: z.string(),
     vehicle_type: z.string(),
     requires_pickup: z.string(),
@@ -60,9 +58,7 @@ const CorporatePackageOrder = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            package_type: "",
             is_fragile: "",
-            urgency: "",
             weight: "",
             vehicle_type: "",
             requires_pickup: "",
@@ -135,7 +131,7 @@ const CorporatePackageOrder = () => {
                 break;
             case "items":
                 const detailsValidation = await form.trigger([
-                    "name", "package_type", "is_fragile", "urgency", "vehicle_type", "weight", "recipient_name", "recipient_phone", "recipient_address"
+                    "name", "is_fragile", "vehicle_type", "weight", "recipient_name", "recipient_phone", "recipient_address"
                 ])
 
                 if (detailsValidation) {
@@ -177,9 +173,7 @@ const CorporatePackageOrder = () => {
         console.log(values.recipient_latLng);
         const formData = new FormData();
         formData.append("name", values.name);
-        formData.append("package_type", values.package_type);
         formData.append("is_fragile", values.is_fragile);
-        formData.append("urgency", values.urgency);
         formData.append("weight", values.weight);
         formData.append("vehicle_type", values.vehicle_type);
         formData.append("requires_pickup", values.requires_pickup);
@@ -301,7 +295,7 @@ const CorporatePackageOrder = () => {
                                     <p className='text-slate-400'>Fill all required form fields</p>
                                 </div>
                                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4'>
-                                    <div className='col-span-5'>
+                                    <div className='col-span-10'>
                                         <FormField
                                             control={form.control}
                                             name="name"
@@ -321,37 +315,14 @@ const CorporatePackageOrder = () => {
                                             )}
                                         />
                                     </div>
-                                    <div className='col-span-3'>
-                                        <FormField
-                                            control={form.control}
-                                            name="package_type"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Package Type</FormLabel>
-                                                    <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className='w-full'>
-                                                                <SelectValue placeholder="Choose option" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {packageTypes.map((item: any) => (
-                                                                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    
                                     <div className='col-span-2'>
                                         <FormField
                                             control={form.control}
                                             name="is_fragile"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Is fragile?</FormLabel>
+                                                    <FormLabel>Fragile?</FormLabel>
                                                     <FormControl>
                                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                             <SelectTrigger className='w-full'>
@@ -368,30 +339,7 @@ const CorporatePackageOrder = () => {
                                             )}
                                         />
                                     </div>
-                                    <div className='col-span-2'>
-                                        <FormField
-                                            control={form.control}
-                                            name="urgency"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Urgency</FormLabel>
-                                                    <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className='w-full'>
-                                                                <SelectValue placeholder="Choose option" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {urgencyTypes.map((item: any) => (
-                                                                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    
                                 </div>
                                 <div className='grid grid-cols-1 md:grid-cols-4 gap-4 pt-4'>
                                     <FormField 
@@ -597,7 +545,7 @@ const CorporatePackageOrder = () => {
                                                         name={`items.${index}.description`}
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>Description</FormLabel>
+                                                                <FormLabel>Description (optional)</FormLabel>
                                                                 <FormControl>
                                                                     <Textarea
                                                                         placeholder='Description here'

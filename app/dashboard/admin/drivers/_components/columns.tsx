@@ -2,6 +2,7 @@
 
 import { UserModel } from "@/lib/models/user_model"
 import { ColumnDef } from "@tanstack/react-table"
+import { MoreHorizontal } from "lucide-react";
 
 export const columns: ColumnDef<UserModel>[] = [
     {
@@ -19,6 +20,12 @@ export const columns: ColumnDef<UserModel>[] = [
     {
         accessorKey: "role",
         header: "Role",
+        cell: ({row}) => {
+            const role = row?.original?.role;
+            return(
+                <p className="capitalize">{role}</p>
+            );
+        }
     },
     {
         accessorKey: "date_joined",
@@ -36,5 +43,10 @@ export const columns: ColumnDef<UserModel>[] = [
     {
         accessorKey: "",
         header: "Action",
+        cell: ({row}) => {
+            return (
+                <MoreHorizontal />
+            );
+        }
     },
 ]
