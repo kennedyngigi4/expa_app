@@ -11,23 +11,50 @@ import { cn } from "@/lib/utils"
 export const columns: ColumnDef<PackageModel>[] = [
     {
         id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
+        header: ({ table }) => {
+            const allRows = table.getRowModel().rows;
+            const selectableRows = allRows.filter(
+                (row) => row.original.status === "pending"
+            );
+
+            const allSelectableSelected =
+                selectableRows.length > 0 &&
+                selectableRows.every((row) => row.getIsSelected());
+
+            const someSelectableSelected = selectableRows.some((row) =>
+                row.getIsSelected()
+            );
+
+            return (
+                <Checkbox
+                    checked={
+                        allSelectableSelected
+                            ? true
+                            : someSelectableSelected
+                                ? "indeterminate"
+                                : false
+                    }
+                    onCheckedChange={(value) => {
+                        // only toggle rows that are pending
+                        selectableRows.forEach((row) => row.toggleSelected(!!value));
+                    }}
+                    aria-label="Select all pending"
+                    // ✅ stays enabled even with mixed statuses
+                    disabled={selectableRows.length === 0}
+                />
+            );
+        },
+        cell: ({ row }) => {
+            const status = row.original.status;
+            return (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    disabled={status !== "pending"} // visual and functional disable
+                />
+            );
+        },
         enableSorting: false,
         enableHiding: false,
     },

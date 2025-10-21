@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout, OctagonAlert, Package, Truck, File, Warehouse, Users, CarFront, SignpostBigIcon, Contact, Boxes, Landmark, SlidersHorizontal, Bell, Route, Archive, PackageCheck, PackagePlus } from 'lucide-react';
+import { Layout, OctagonAlert, Package, Truck, File, Warehouse, Users, CarFront, SignpostBigIcon, Contact, Boxes, Landmark, SlidersHorizontal, Bell, Route, Archive, PackageCheck, PackagePlus, BellIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import SidebarItem from './sidebar-item';
 import { useSession } from 'next-auth/react';
@@ -95,6 +95,11 @@ const managerRoutes = [
         icon: Truck,
         label: "Fullloads",
         href: "/dashboard/manager/fullloads",
+    },
+    {
+        icon: BellIcon,
+        label: "Notifications",
+        href: "/dashboard/manager/notifications",
     },
     {
         icon: File,

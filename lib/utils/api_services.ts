@@ -34,8 +34,10 @@ export const APIServices = {
                     "Authorization": `Token ${token}`,
                 }
             });
-            const data = await res.json();
 
+            
+            const data = await res.json();
+            
             if(!res.ok){
                 return { "success": false, "message": "Something went wrong.", }
             }

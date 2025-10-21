@@ -35,7 +35,7 @@ const IncomingOrders = () => {
             </div>
 
             <div className="flex space-x-2 mb-4">
-                {["all", "pending", "assigned", "in_transit", "received", "delivered"].map((cat) => (
+                {["all", "pending", "assigned", "in_transit", "in_office", "delivered"].map((cat) => (
                     <Button
                         key={cat}
                         variant={category === cat ? "default" : "outline"}
