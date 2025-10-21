@@ -57,6 +57,8 @@ export type PackageModel  = {
     is_paid: boolean;
     created_by_role: string;
     created_at: string;
+    current_office: string;
+    manager_office_id: string;
 }
 
 

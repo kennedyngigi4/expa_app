@@ -13,8 +13,12 @@ export const columns: ColumnDef<PackageModel>[] = [
         id: "select",
         header: ({ table }) => {
             const allRows = table.getRowModel().rows;
+
+            // ✅ Only rows in_office AND in the manager's office
             const selectableRows = allRows.filter(
-                (row) => row.original.status === "in_office"
+                (row) =>
+                    row.original.status === "in_office" &&
+                    row.original.current_office === row.original.manager_office_id
             );
 
             const allSelectableSelected =
@@ -35,23 +39,25 @@ export const columns: ColumnDef<PackageModel>[] = [
                                 : false
                     }
                     onCheckedChange={(value) => {
-                        // only toggle rows that are pending
+                        // ✅ Toggle only eligible rows
                         selectableRows.forEach((row) => row.toggleSelected(!!value));
                     }}
-                    aria-label="Select all pending and in_office"
-                    // ✅ stays enabled even with mixed statuses
+                    aria-label="Select all in_office in manager's office"
                     disabled={selectableRows.length === 0}
                 />
             );
         },
         cell: ({ row }) => {
-            const status = row.original.status;
+            const isSelectable =
+                row.original.status === "in_office" &&
+                row.original.current_office === row.original.manager_office_id;
+
             return (
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
                     aria-label="Select row"
-                    disabled={status !== "in_office"} 
+                    disabled={!isSelectable} // ✅ disable if not manager's office or not in_office
                 />
             );
         },
