@@ -13,13 +13,13 @@ export const columns: ColumnDef<PackageModel>[] = [
         id: "select",
         header: ({ table }) => {
             const allRows = table.getRowModel().rows;
+            const selectableRows = allRows.filter((row) => {
+                const status = row.original.status;
+                const currentOffice = Number(row.original.current_office);
+                const managerOffice = Number(row.original.manager_office_id);
 
-            // ✅ Only rows in_office AND in the manager's office
-            const selectableRows = allRows.filter(
-                (row) =>
-                    row.original.status === "in_office" &&
-                    row.original.current_office === row.original.manager_office_id
-            );
+                return status === "in_office" && currentOffice === managerOffice;
+            });
 
             const allSelectableSelected =
                 selectableRows.length > 0 &&
@@ -48,16 +48,19 @@ export const columns: ColumnDef<PackageModel>[] = [
             );
         },
         cell: ({ row }) => {
+            const status = row.original.status;
+            const currentOffice = Number(row.original.current_office);
+            const managerOffice = Number(row.original.manager_office_id);
+
             const isSelectable =
-                row.original.status === "in_office" &&
-                row.original.current_office === row.original.manager_office_id;
+                status === "in_office" && currentOffice === managerOffice;
 
             return (
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
                     aria-label="Select row"
-                    disabled={!isSelectable} // ✅ disable if not manager's office or not in_office
+                    disabled={!isSelectable}
                 />
             );
         },
