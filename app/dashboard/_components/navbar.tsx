@@ -12,7 +12,7 @@ const DashboardNavbar = () => {
 
   return (
     <section className='px-6 py-3 shadow h-12 flex justify-between'>
-      <p className='capitalize text-primary font-semibold'>{session?.user?.role === "partner_shop" ? "ExPa Independent Collection Centre" : session?.user?.role}</p>
+      <p className='capitalize text-primary font-semibold'>{session?.user?.role === "partner_shop" ? "ExPa Collection Agent" : session?.user?.role}</p>
       <Avatar onClick={logOut}>
         <AvatarImage src="" />
         <AvatarFallback className="bg-amber-600 text-white uppercase font-bold">{session?.user?.name?.slice(0, 1)}</AvatarFallback>
