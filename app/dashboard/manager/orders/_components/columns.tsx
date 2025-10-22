@@ -16,12 +16,14 @@ export const columns: ColumnDef<PackageModel>[] = [
 
             const selectableRows = allRows.filter((row) => {
                 const status = row.original.status;
-                const currentOffice = Number(row.original.current_office);
+                const currentOffice = row.original.current_office
+                    ? Number(row.original.current_office)
+                    : null;
                 const managerOffice = Number(row.original.manager_office_id);
 
                 const isSelectable =
-                    (status === "in_office" || status === "pending") &&
-                    currentOffice === managerOffice;
+                    (status === "in_office" && currentOffice === managerOffice) ||
+                    status === "pending";
 
                 return isSelectable;
             });
@@ -53,12 +55,14 @@ export const columns: ColumnDef<PackageModel>[] = [
         },
         cell: ({ row }) => {
             const status = row.original.status;
-            const currentOffice = Number(row.original.current_office);
+            const currentOffice = row.original.current_office
+                ? Number(row.original.current_office)
+                : null;
             const managerOffice = Number(row.original.manager_office_id);
 
             const isSelectable =
-                (status === "in_office" || status === "pending") &&
-                currentOffice === managerOffice;
+                (status === "in_office" && currentOffice === managerOffice) ||
+                status === "pending";
 
             return (
                 <Checkbox
