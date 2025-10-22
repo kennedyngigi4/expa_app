@@ -257,6 +257,8 @@ const CreateOrderPage = () => {
             formData.append("recipient_phone", values.recipient_phone);
             formData.append("recipient_address", values.recipient_address);
             formData.append("requires_last_mile", values.requires_last_mile);
+            formData.append("payment_phone", values.sender_phone);
+            formData.append("payment_method", "mpesa");
             
             if(estimatedPrice){
                 formData.append("fees", estimatedPrice);
