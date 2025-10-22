@@ -19,7 +19,11 @@ export const columns: ColumnDef<PackageModel>[] = [
                 const currentOffice = Number(row.original.current_office);
                 const managerOffice = Number(row.original.manager_office_id);
 
-                return status === "in_office" && currentOffice === managerOffice;
+                const isSelectable =
+                    (status === "in_office" || status === "pending") &&
+                    currentOffice === managerOffice;
+
+                return isSelectable;
             });
 
             const allSelectableSelected =
@@ -42,7 +46,7 @@ export const columns: ColumnDef<PackageModel>[] = [
                     onCheckedChange={(value) => {
                         selectableRows.forEach((row) => row.toggleSelected(!!value));
                     }}
-                    aria-label="Select all in_office in manager's office"
+                    aria-label="Select all selectable rows"
                     disabled={selectableRows.length === 0}
                 />
             );
@@ -51,8 +55,10 @@ export const columns: ColumnDef<PackageModel>[] = [
             const status = row.original.status;
             const currentOffice = Number(row.original.current_office);
             const managerOffice = Number(row.original.manager_office_id);
+
             const isSelectable =
-                status === "in_office" && currentOffice === managerOffice;
+                (status === "in_office" || status === "pending") &&
+                currentOffice === managerOffice;
 
             return (
                 <Checkbox
