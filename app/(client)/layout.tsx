@@ -15,18 +15,31 @@ const ClientLayout = ({ children } : { children: React.ReactNode }) => {
     const [ isReady, setIsReady ] = useState(false);
     
     useEffect(() => {
-
-        
-        
-
         if (status === "loading" ) return;
 
         if(status === "unauthenticated"){
             router.push("/auth/login");
         } else {
+            const role = session?.user?.role;
+            switch (role) {
+                case "admin":
+                    router.push("/dashboard/admin");
+                    break;
+                case "manager":
+                    router.push("/dashboard/manager");
+                    break;
+                case "partner_shop":
+                    router.push("/dashboard/partner");
+                    break;
+                default:
+                    router.push("/");
+                    break;
+            }
+
             setIsReady(true);
         }
     }, [status, router]);
+
 
 
     if(!isReady){

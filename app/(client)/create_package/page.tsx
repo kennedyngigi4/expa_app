@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label';
 const formSchema = z.object({
   name: z.string().min(1, { message: "Package Name is required." }),
   is_fragile: z.string().min(1, {message: "Is package fragile?"}),
+  requires_packaging: z.string().optional(),
   length: z.string().optional(),
   width: z.string().optional(),
   height: z.string().optional(),
@@ -248,6 +249,7 @@ const CreatePackagePage = () => {
     defaultValues: {
       name: "",
       is_fragile: "",
+      requires_packaging: "",
       length: "",
       width: "",
       height: "",
@@ -298,7 +300,9 @@ const CreatePackagePage = () => {
       formData.append("payment_phone", values.mpesaphone);
       formData.append("payment_method", paymentMethod);
       
-      
+      if (values.requires_packaging) {
+        formData.append("requires_packaging", values.requires_packaging);
+      }
 
       if(totalFee){
         formData.append("fees", totalFee);
@@ -574,9 +578,36 @@ const CreatePackagePage = () => {
                     </div>
                     
                 </div>
-
-                
+                  
+                  
                   <div className='grid grid-cols-2 md:grid-cols-12 gap-5 pt-5'>
+                    {formValues.is_fragile == "true" && (
+                      <div className='col-span-3'>
+                        <FormField
+                          control={form.control}
+                          name="requires_packaging"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Requires Packaging?</FormLabel>
+                              <FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <SelectTrigger className='w-full'>
+                                    <SelectValue placeholder="Choose option" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="false">No</SelectItem>
+                                    <SelectItem value="true">Yes</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormDescription className='text-red-500 text-xs'>Please note: Packaging services may incur additional costs. The final amount will be communicated by our admin team. <br /> We are not liable for any damages.</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+
                     {selectedSize.toString() !== "1" && (
                       <>
                       <div className='col-span-3'>

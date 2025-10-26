@@ -64,7 +64,7 @@ const ClientPage = () => {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-orange-400">Inter County Delivery</h1>
-            <p>Send your parcel from one town to another. Deliveries can take 1 day or more.</p>
+            <p>Send your parcel from one county to another county. Deliveries can take 1 day or more.</p>
 
             <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
           </div>

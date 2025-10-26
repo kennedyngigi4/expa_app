@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import z, { optional } from 'zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,14 +21,17 @@ import { useRouter } from 'next/navigation';
 
 
 const itemSchema = z.object({
-    name: z.string().min(1, "Name is required."),
-    weight: z.string().optional(),
-    description: z.string(),
+    destination: z.string().min(1, "Name is required."),
+    destination_latLng: z.string(),
+    weight: z.string().min(1, "Weight is required."),
+    description: z.string().min(1, "Description is required."),
+    price: z.string().optional(),
 })
 
 const formSchema = z.object({
     name: z.string().min(4, { message: "Name must be at least 4 characters"}),
     is_fragile: z.string(),
+    requires_packaging: z.string().optional(),
     weight: z.string(),
     vehicle_type: z.string(),
     requires_pickup: z.string(),
@@ -59,6 +62,7 @@ const CorporatePackageOrder = () => {
         defaultValues: {
             name: "",
             is_fragile: "",
+            requires_packaging: "",
             weight: "",
             vehicle_type: "",
             requires_pickup: "",
@@ -68,8 +72,10 @@ const CorporatePackageOrder = () => {
             recipient_address: "",
             recipient_latLng: "",
             description: "",
-            items: [{name: "", weight: "", description: ""}]
-        }
+            items: [{destination: "", destination_latLng: "", weight: "", description: "", price: ""}]
+        },
+        mode: "onChange",
+        shouldUnregister: false,
     });
 
     const { fields, append, remove} = useFieldArray({
@@ -146,31 +152,47 @@ const CorporatePackageOrder = () => {
                 const destination = form.getValues("recipient_address"); 
                 const recipient_latLng = form.getValues("recipient_latLng");
 
-                if (weight && recipient_latLng) {
-                    await calculatePrice(weight, destination, recipient_latLng); // a helper function
-                }
+                // if (weight && recipient_latLng) {
+                //     await calculatePrice(weight, destination, recipient_latLng); 
+                // }
                 break;
             default:
                 break;
         }
     }
 
-    const calculatePrice = async (weight: string, destination: string, recipient_latLng: string) => {
-        console.log("Price calculator >>>>>>>>>");
-        const formData = new FormData();
-        formData.append("weight", weight);
-        formData.append("recipient_latLng", recipient_latLng);
+    const calculatePrice = async (index: number, weight: string, destination_latLng: string) => {
+        if(!session?.accessToken) return;
 
-        if (!session?.accessToken) return;
+        try{
+            const formData = new FormData();
+            formData.append("weight", weight);
+            formData.append("recipient_latLng", destination_latLng);
 
-        const resp = await APIServices.post("corporate/calculate_price/", session?.accessToken, formData);
-        console.log(resp);
-        setCalculatorData(resp);
+
+            const resp = await APIServices.post("corporate/calculate_price/", session?.accessToken, formData);
+            if(resp?.price){
+                setValue(`items.${index}.price`, resp.price.toString());
+            } else {
+                setValue(`items.${index}.price`, "");
+            }
+            
+        } catch(e){
+            console.error("Error calculating item price:", e);
+        }
+        
     }
+
+
+    const totalPrice = form.watch("items").reduce((sum, item) => {
+        return sum + (parseFloat(item.price || "0"));
+    }, 0);
+
+    const isFragile = form.watch("is_fragile");
 
     const onSubmit = async(values: z.infer<typeof formSchema>) => {
         
-        console.log(values.recipient_latLng);
+        console.log("Sending ........");
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("is_fragile", values.is_fragile);
@@ -185,8 +207,12 @@ const CorporatePackageOrder = () => {
         formData.append("description", values.description);
         formData.append("delivery_type", selectedDelivery);
         formData.append("package_items", JSON.stringify(values.items));
-        formData.append("fees", calculatorData?.price);
+        formData.append("fees", totalPrice);
 
+
+        if (values.requires_packaging){
+            formData.append("requires_packaging", values.requires_packaging);
+        }
 
         // documents attach
         documents.forEach((file, indx) => {
@@ -204,6 +230,9 @@ const CorporatePackageOrder = () => {
             toast.success(res.message);
         }
     }
+
+
+    
 
     return (
         <section className="md:px-20 px-5 min-h-screen">
@@ -339,6 +368,35 @@ const CorporatePackageOrder = () => {
                                             )}
                                         />
                                     </div>
+                                    
+                                    {isFragile == "true" && (
+                                        <div className='col-span-3'>
+                                            <FormField
+                                                control={form.control}
+                                                name="requires_packaging"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Requires packaging?</FormLabel>
+                                                        <FormControl>
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <SelectTrigger className='w-full'>
+                                                                    <SelectValue placeholder="Choose option" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="false">No</SelectItem>
+                                                                    <SelectItem value="true">Yes</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+
+                                                        </FormControl>
+                                                        <FormDescription className='text-red-500 text-xs'>Please note: Packaging services may incur additional costs. The final amount will be communicated by our admin team. <br /> We are not liable for any damages.</FormDescription>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                    
                                     
                                 </div>
                                 <div className='grid grid-cols-1 md:grid-cols-4 gap-4 pt-4'>
@@ -502,15 +560,12 @@ const CorporatePackageOrder = () => {
                                                 <div className='md:col-span-3'>
                                                     <FormField
                                                         control={form.control}
-                                                        name={`items.${index}.name`}
+                                                        name={`items.${index}.destination`}
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>Item Name</FormLabel>
+                                                                <FormLabel>Destination</FormLabel>
                                                                 <FormControl>
-                                                                    <Input
-                                                                        placeholder='Enter item name'
-                                                                        {...field}
-                                                                    />
+                                                                    <LocationSearch value={field.value} onChange={field.onChange} onLatLngChange={(lat, lng) => { setValue(`items.${index}.destination_latLng`, `${lat.toString()},${lng.toString()}`) }} />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -518,18 +573,28 @@ const CorporatePackageOrder = () => {
                                                     />
                                                 </div>
 
-                                                <div className='md:col-span-2'>
+                                                <div className='md:col-span-1'>
                                                     {/* Weight */}
                                                     <FormField
                                                         control={form.control}
                                                         name={`items.${index}.weight`}
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>Weight <span className='text-xs'>(optional)</span></FormLabel>
+                                                                <FormLabel>Weight <span className='text-xs'></span></FormLabel>
                                                                 <FormControl>
                                                                     <Input
                                                                         placeholder='Enter item name'
                                                                         {...field}
+                                                                        onChange={async (e) => {
+                                                                            field.onChange(e);
+
+                                                                            const newWeight = e.target.value;
+                                                                            const destinationLatLng =  form.getValues(`items.${index}.destination_latLng`);
+
+                                                                            if(newWeight && destinationLatLng) {
+                                                                                await calculatePrice(index, newWeight, destinationLatLng);
+                                                                            }
+                                                                        }}
                                                                     />
                                                                 </FormControl>
                                                                 <FormMessage />
@@ -545,7 +610,7 @@ const CorporatePackageOrder = () => {
                                                         name={`items.${index}.description`}
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>Description (optional)</FormLabel>
+                                                                <FormLabel>Description</FormLabel>
                                                                 <FormControl>
                                                                     <Textarea
                                                                         placeholder='Description here'
@@ -557,8 +622,21 @@ const CorporatePackageOrder = () => {
                                                         )}
                                                     />
                                                 </div>
-                                                
                                                 <div className='md:col-span-2'>
+                                                    <FormField 
+                                                        control={form.control}
+                                                        name={`items.${index}.price`}
+                                                        render={({field}) => (
+                                                            <FormItem>
+                                                                <FormLabel>Price (KES)</FormLabel>
+                                                                <FormControl>
+                                                                    <Input {...field} readOnly className="bg-slate-100 text-right" placeholder='Auto-calculated' />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div className='md:col-span-1'>
                                                     <div className='flex flex-row gap-3 justify-center items-center'>
                                                         <Button
                                                             type="button"
@@ -570,7 +648,7 @@ const CorporatePackageOrder = () => {
                                                         </Button>
                                                         <Button
                                                             type="button"
-                                                            onClick={() => append({ name: "", weight: "", description: "" })}
+                                                            onClick={() => append({ destination: "", destination_latLng: "", weight: "", description: "" })}
                                                             className='hover:cursor-pointer'
                                                         >
                                                             +
@@ -610,14 +688,14 @@ const CorporatePackageOrder = () => {
                                         </CardAction>
                                     </CardHeader>
                                     <CardContent>
-                                        {calculatorData?.price ? (
+                                        {totalPrice ? (
                                             <>
-                                                <p>Route: <span className="text-slate-500 text-sm">{calculatorData?.origin_office} → {calculatorData?.destination_office}</span></p>
-                                                <p>Price: <span className="text-slate-500 text-sm">KES {calculatorData?.price.toLocaleString()}</span></p>
+                                                <p>Route: <span className="text-slate-500 text-sm">{form.getValues("recipient_address")}</span></p>
+                                                <p>Price: <span className="text-slate-500 text-sm">KES {totalPrice?.toLocaleString()}</span></p>
                                             </>
                                         ) : <>
                                             <div className="text-red-500 flex flex-col justify-center items-center space-y-5">
-                                                <div>{calculatorData.message}</div>
+                                               
                                                 <div className='text-sm'>Check your destination.</div>
                                             </div>
                                         </>}
@@ -627,7 +705,7 @@ const CorporatePackageOrder = () => {
                                         <CardFooter className='pt-10 flex flex-row justify-between'>
                                             <div className='flex space-x-15 mt-8'>
                                                 <Button type="button" onClick={() => handleNext("items")} variant="ghost" className='cursor-pointer'><ArrowLeft /> Back</Button>
-                                                {calculatorData?.price && (
+                                                {totalPrice && (
                                                     <Button type="submit" className='cursor-pointer'>Submit</Button>
                                                 )}
                                             </div> 

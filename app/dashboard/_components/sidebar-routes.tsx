@@ -14,7 +14,7 @@ const adminRoutes = [
     },
     {
         icon: Warehouse,
-        label: "Offices",
+        label: "Hubs",
         href: "/dashboard/admin/offices",
     },
     {
@@ -39,12 +39,12 @@ const adminRoutes = [
     },
     {
         icon: Package,
-        label: "Orders",
+        label: "Waybills",
         href: "/dashboard/admin/orders",
     },
     {
         icon: Boxes,
-        label: "Shipments",
+        label: "Manifests",
         href: "/dashboard/admin/shipments",
     },
     {
@@ -73,22 +73,22 @@ const managerRoutes = [
     },
     {
         icon: Boxes,
-        label: "Orders",
+        label: "Waybills",
         href: "/dashboard/manager/orders",
     },
     {
         icon: PackagePlus,
-        label: "Shipments",
+        label: "Manifests",
         href: "/dashboard/manager/shipments",
     },
     {
         icon: Boxes,
-        label: "Incoming Orders",
+        label: "Incoming Waybills",
         href: "/dashboard/manager/incoming-orders",
     },
     {
         icon: PackageCheck,
-        label: "Incoming Shipments",
+        label: "Incoming Manifests",
         href: "/dashboard/manager/incoming-shipments",
     },
     {
@@ -121,7 +121,7 @@ const partnerRoutes = [
     },
     {
         icon: Package,
-        label: "Orders",
+        label: "Waybills",
         href: "/dashboard/partner/orders",
     },
     {

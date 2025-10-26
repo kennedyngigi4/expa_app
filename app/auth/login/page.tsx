@@ -45,7 +45,6 @@ const LoginPage = () => {
         try{
             
             const res = await userLogin(values.email, values.password);
-            console.log(res);
             
             if (res.success){
                 const session = await getSession();
@@ -136,6 +135,11 @@ const LoginPage = () => {
                                         </FormItem>
                                     )}
                                 />
+
+
+                                <div className='w-full text-end'>
+                                    <Link className="text-xs text-orange-500" href="/auth/forgot-password">Forgot Password?</Link>
+                                </div>
 
                                 <div className='w-full'>
                                     <Button disabled={!isValid || isSubmitting} className="bg-primary text-white w-full cursor-pointer">{loading ? "Authenticating ..." : "Log In"}</Button>

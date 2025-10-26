@@ -9,7 +9,7 @@ const Footer = () => {
     <section className="bg-amber-600 text-white py-10 md:px-15 px-8 ">
       <div className="grid lg:grid-cols-4 grid-cols-1 gap-5">
         <div className="">
-          <h1 className="text-2xl font-bold pb-4">EXPRESS PARCELS (EXPA)</h1>
+          <h1 className="text-2xl font-bold pb-4">EXPRESS PARCEL (ExPa)</h1>
           <p>We deliver parcels and cargo to Northern Kenya daily</p>
         </div>
 
@@ -45,7 +45,7 @@ const Footer = () => {
           <h1 className="font-bold">Contact Us</h1>
           <div className="flex flex-row space-x-2">
             <Phone size={20} />
-            <p>020 258 5290<br />
+            <p>
               0722 620 988<br />
               0734 620 988
             </p>
@@ -63,7 +63,7 @@ const Footer = () => {
 
 
       </div>
-      <div className="mt-6 pt-4 text-center border-t-2 border-white border-dotted">&copy; 2025 EXPA | All Rights Reserved</div>
+      <div className="mt-6 pt-4 text-center border-t-2 border-white border-dotted">&copy; 2025 ExPa | All Rights Reserved</div>
     </section>
   )
 }
