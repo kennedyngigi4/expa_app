@@ -1,15 +1,14 @@
 "use client";
 
-import ConfirmPaymentsModal from '@/components/modals/confirm_payments';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import { PackageModel } from '@/lib/models/all_models';
 import { cn } from '@/lib/utils';
 import { APIServices } from '@/lib/utils/api_services';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 
 const OrderDetailsPage = () => {
@@ -30,6 +29,35 @@ const OrderDetailsPage = () => {
         fetchData();
     }, [session, params]);
 
+
+    const handlePrint = async() => {
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_APIURL}/deliveries/packages/print/?ids=${packageData?.id}`,
+                {
+                    method: "GET",
+                    headers: { Accept: "application/pdf" },
+                }
+            );
+
+            if (!res.ok) throw new Error("Failed to generate PDF");
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            // Trigger download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${packageData?.package_id || "package"}.pdf`;
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to generate PDF");
+        }
+    }
+
   return (
     <section>
         <div className='grid md:grid-cols-3 grid-cols-1 gap-5'>
@@ -44,21 +72,17 @@ const OrderDetailsPage = () => {
                     <h1>Status</h1>
                     <p className={cn('capitalize', packageData?.status === 'pending' ? 'text-red-600' : 'text-green-600')}>{packageData?.status}</p>
                 </div>
+
+                <div className="flex mt-6">
+                    <Button className="cursor-pointer" onClick={handlePrint}>Print Package</Button>
+                </div>
             </div>
             <div className='space-y-1'>
-                {packageData?.is_paid ? (
-                    <p>Paid</p>
-                ) : (
-                    <ConfirmPaymentsModal title='Confirm Payments' subtitle={packageData?.package_id}>
-                        <section className='space-y-3'>
-                            <div className='space-y-2'>
-                                <Label>MPESA Code</Label>
-                                <Input type="text" placeholder='e.g. TGN37SYZ6N' />
-                            </div>
-                            <Button className='w-full bg-primary cursor-pointer'>Confirm Payments</Button>
-                        </section>
-                    </ConfirmPaymentsModal>
+                {packageData?.qrcode_svg && (
+                    <Image src={packageData?.qrcode_svg} className='' width={250} height={250} alt="QR Code" />
                 )}
+
+                
             </div>
         </div>
 

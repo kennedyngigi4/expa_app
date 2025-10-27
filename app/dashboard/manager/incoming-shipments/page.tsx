@@ -29,8 +29,8 @@ const IncomingShipmentsPage = () => {
     <section>
 
       <div className='flex flex-col pb-8'>
-        <h1 className='text-primary font-semibold text-xl'>Incoming Shipments</h1>
-        <p className='text-slate-500'>Incoming shipments to the office.</p>
+        <h1 className='text-primary font-semibold text-xl'>Incoming Manifests</h1>
+        <p className='text-slate-500'>Incoming manifests to the office.</p>
       </div>
 
 

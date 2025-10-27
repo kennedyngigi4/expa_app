@@ -28,7 +28,7 @@ const ShipmentsPage = () => {
     <section>
 
       <div className='flex flex-col pb-8'>
-        <h1 className='text-primary font-semibold text-xl'>All Shipments</h1>
+        <h1 className='text-primary font-semibold text-xl'>All Manifests</h1>
         <p className='text-slate-500'>All shipments done in your office and by you.</p>
       </div>
 

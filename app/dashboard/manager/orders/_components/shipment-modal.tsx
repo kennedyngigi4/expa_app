@@ -96,7 +96,7 @@ const ShipmentModal: React.FC<ShipmentModalProps> = ({
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="delivery">Last Mile</SelectItem>
-                            <SelectItem value="transfer">Line Whole</SelectItem>
+                            <SelectItem value="transfer">Line Haul</SelectItem>
                             <SelectItem value="pickup">First Mile</SelectItem>
                         </SelectContent>
                     </Select>

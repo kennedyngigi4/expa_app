@@ -5,9 +5,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { APIServices } from '@/lib/utils/api_services';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import z from 'zod';
 
 
@@ -19,7 +23,10 @@ const formSchema = z.object({
 })
 
 const ConfirmShipment = () => {
+    const params = useParams();
+    const shipmentId = params.shipmentId;
 
+    const {data:session} = useSession();
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -32,16 +39,31 @@ const ConfirmShipment = () => {
 
     const { isSubmitting, isValid } = form.formState;
 
-    const onSubmit = async() => {
+    const onSubmit = async(values: z.infer<typeof formSchema>) => {
+        console.log(values);
+        if(!session?.accessToken) return;
 
+        const formData = new FormData();
+        formData.append("status", values.status);
+        formData.append("identity_number", values.identity_number);
+        formData.append("name", values.name);
+        formData.append("note", values.note);
+
+        const resp = await APIServices.post(`deliveries/drivers/shipments/${shipmentId}/proofs/`, session?.accessToken, formData);
+        if(resp.success){
+            toast.success("Proof submitted successfully.");
+        } else {
+            toast.error("An error occured");
+        }
     }
 
     return (
         <section className='flex flex-col min-h-screen items-center justify-center'>
-            <div className="w-[60%] p-10 shadow-2xl">
+            <div className="md:w-[60%] w-[90%] p-10 shadow-2xl">
                 <div className='pb-10'>
-                    <h1 className='font-bold  text-2xl'>Confirm Shipment Delivery</h1>
-                    <p>ID: </p>
+                    <h1 className='font-bold  text-2xl'>Confirm Manifest Delivery</h1>
+                    <p>ID: {shipmentId} </p>
+                    
                 </div>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
@@ -53,7 +75,7 @@ const ConfirmShipment = () => {
                                     <FormItem>
                                         <FormLabel>Status</FormLabel>
                                         <FormControl>
-                                            <Select>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger className="w-[180px]">
                                                     <SelectValue placeholder="Choose option" />
                                                 </SelectTrigger>
@@ -123,7 +145,7 @@ const ConfirmShipment = () => {
                         </div>
 
                         <div>
-                            <Button>Submit</Button>
+                            <Button type='submit' className='cursor-pointer'>Submit</Button>
                         </div>
                     </form>
                 </Form>

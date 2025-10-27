@@ -30,8 +30,8 @@ const IncomingOrders = () => {
     return (
         <section className='flex flex-col'>
             <div className='pb-12'>
-                <h1 className='text-primary font-semibold text-xl'>Incoming Orders</h1>
-                <p className='text-slate-500'>Here are all incoming orders.</p>
+                <h1 className='text-primary font-semibold text-xl'>Incoming Waybills</h1>
+                <p className='text-slate-500'>Here are all incoming waybills.</p>
             </div>
 
             <div className="flex space-x-2 mb-4">

@@ -42,11 +42,7 @@ const PackageDetailsSlug = () => {
                     {packageData?.is_paid ? (
                         <>Paid</>
                     ) : (
-                        <ConfirmPaymentsModal title='Confirm Payments' subtitle={`${packageData?.package_id}`}>
-                            <div>
-                                <p>Form here ....</p>
-                            </div>
-                        </ConfirmPaymentsModal>
+                        <p className='text-red-500'>Not Paid</p>
                     )}
                     <h1 className='text-red-500 pt-5'>Cancel Order</h1>
                 </div>

@@ -33,12 +33,12 @@ const ConfirmOrder = () => {
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async() => {
-
+        
     }
 
     return (
         <section className='flex flex-col min-h-screen items-center justify-center'>
-            <div className="w-[60%] p-10 shadow-2xl">
+            <div className="md:w-[60%] w-[90%] p-10 shadow-2xl">
                 <div className='pb-10'>
                     <h1 className='font-bold  text-2xl'>Confirm Order Delivery</h1>
                     <p>ID: </p>

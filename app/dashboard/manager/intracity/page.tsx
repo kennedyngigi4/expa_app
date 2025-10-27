@@ -30,7 +30,7 @@ const IntracityPage = () => {
   return (
       <section className='flex flex-col'>
           <div className='pb-12'>
-              <h1 className='text-primary font-semibold text-xl'>Intracity Orders</h1>
+              <h1 className='text-primary font-semibold text-xl'>Intracity Waybills</h1>
               <p className='text-slate-500'>Here are all intracity orders made through your office. Use filters below.</p>
           </div>
 

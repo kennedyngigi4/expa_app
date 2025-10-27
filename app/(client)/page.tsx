@@ -52,7 +52,7 @@ const ClientPage = () => {
             <Image src="/images/icons/bike.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-orange-400">Intra City Delivery</h1>
+            <h1 className="text-lg font-semibold text-orange-400">ExPa Hodihodi Delivery</h1>
             <p>Send your parcel within your city. Same day deliveries in your town.</p>
 
             <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
@@ -63,7 +63,7 @@ const ClientPage = () => {
             <Image src="/images/icons/truck.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-orange-400">Inter County Delivery</h1>
+            <h1 className="text-lg font-semibold text-orange-400">ExPa Swift Inter-County Delivery</h1>
             <p>Send your parcel from one county to another county. Deliveries can take 1 day or more.</p>
 
             <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>
@@ -74,7 +74,7 @@ const ClientPage = () => {
             <Image src="/images/icons/plane.png" alt="Intracity Delivery" width={100} height={100} />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-orange-400">International Delivery</h1>
+            <h1 className="text-lg font-semibold text-orange-400">ExPa Jukwaa Delivery</h1>
             <p>Send your parcel out of Kenya to another country.</p>
 
             <Link href="#" className="flex flex-row items-center py-3 text-sm">Get started <ArrowRight className='ps-1' size={20} /></Link>

@@ -31,7 +31,7 @@ const OrdersPage = () => {
   return (
     <section className='flex flex-col'>
       <div className='pb-12'>
-        <h1 className='text-primary font-semibold text-xl'>All Orders</h1>
+        <h1 className='text-primary font-semibold text-xl'>All Waybills</h1>
         <p className='text-slate-500'>Here are all orders made for your office. Use filters below.</p>
       </div>
 

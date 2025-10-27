@@ -122,7 +122,13 @@ export const columns: ColumnDef<PackageModel>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-          },
+        },
+        cell: ({ row }) => {
+            const status = row?.original?.status;
+            return (
+                <p className={cn("capitalize", status === "pending" || status === "created" && "text-red-500", status === "assigned" && "text-orange-300", status === "in_transit" && "text-orange-400", status === "delivered" && "text-green-500")}>{status}</p>
+            );
+        }
     },
     {
         accessorKey: "sender_name",

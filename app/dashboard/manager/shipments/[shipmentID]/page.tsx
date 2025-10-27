@@ -91,9 +91,9 @@ const ShipmentDetailsPage = () => {
                 <h1 className='text-primary font-semibold pb-5 text-lg'>Stages</h1>
                 {shipmentData?.stages?.map((data: any) => (
                     <div className="grid md:grid-cols-5 grid-cols-1 pb-5" key={data?.id || Math.random()}>
-                        <p><span className='font-semibold text-sm'>Driver</span>:<br /> {data.status}</p>
-                        <p><span className='font-semibold text-sm'>Stage</span>:<br /> {data.stage_number}</p>
                         <p><span className='font-semibold text-sm'>Driver</span>:<br /> {data.driver}</p>
+                        <p><span className='font-semibold text-sm'>Stage</span>:<br /> {data.stage_number}</p>
+                        <p><span className='font-semibold text-sm'>Driver Contact</span>:<br /> {data.driver_phone}</p>
                         <p><span className='font-semibold text-sm'>Assigned At</span>:<br /> {new Date(data.created_at).toLocaleDateString("en-us", { year: "numeric", month: "short", day: "numeric"})}</p>
                     </div>
                 ))}
