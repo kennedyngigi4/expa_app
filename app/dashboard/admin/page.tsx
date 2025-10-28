@@ -2,10 +2,26 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, File, Bell, HandCoinsIcon, Route, Car, Boxes, Users, Warehouse } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Component } from './_components/example-chart';
+import { APIServices } from '@/lib/utils/api_services';
+import { useSession } from 'next-auth/react';
 
 const AdminHome = () => {
+  const {data:session} = useSession();
+  const [statistics, setStatistics] = useState({});
+  
+  useEffect(() => {
+    const fetchStatistics = async() => {
+      if(!session?.accessToken) return;
+
+      const response = await APIServices.get("account/superadmin/statistics", session?.accessToken);
+      console.log(response)
+      setStatistics(response);
+    }
+    fetchStatistics();
+  }, [session])
+
   return (
     <section>
       <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4'>
@@ -15,7 +31,7 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">5</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.waybills}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
             <p>Orders</p>
@@ -28,7 +44,7 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">9</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.employees}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
             <p>Employees</p>
@@ -42,10 +58,10 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">9</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.manifests}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
-            <p>Shipments</p>
+            <p>Manifests</p>
           </CardContent>
         </Card>
 
@@ -56,10 +72,10 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">509</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.offices}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
-            <p>Offices</p>
+            <p>Offices/ Hubs</p>
           </CardContent>
         </Card>
 
@@ -69,7 +85,7 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">100</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.routes}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
             <p>Routes</p>
@@ -83,7 +99,7 @@ const AdminHome = () => {
           </div>
 
           <CardHeader className="relative z-10">
-            <CardTitle className="text-primary font-medium text-xl">100</CardTitle>
+            <CardTitle className="text-primary font-medium text-xl">{statistics?.drivers}</CardTitle>
           </CardHeader>
           <CardContent className="relative z-10">
             <p>Drivers</p>

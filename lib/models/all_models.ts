@@ -81,8 +81,10 @@ export type ShipmentModel = {
     shipment_type: string; 
     origin_office: string;
     originoffice?: string;
+    pickup_location?: string;
     destination_office: string;
     destinationoffice?: string;
+    destination_location?: string;
     status: string;
     qrcode_svg: string;
     summary: string;
