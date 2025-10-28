@@ -31,6 +31,12 @@ const ClientLayout = ({ children } : { children: React.ReactNode }) => {
                 case "partner_shop":
                     router.push("/dashboard/partner");
                     break;
+                case "partner_rider":
+                    router.push("/confirm");
+                    break;
+                case "driver":
+                    router.push("/confirm");
+                    break;
                 default:
                     router.push("/");
                     break;

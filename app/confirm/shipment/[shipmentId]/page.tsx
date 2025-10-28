@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { APIServices } from '@/lib/utils/api_services';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -25,6 +25,7 @@ const formSchema = z.object({
 const ConfirmShipment = () => {
     const params = useParams();
     const shipmentId = params.shipmentId;
+    const router = useRouter();
 
     const {data:session} = useSession();
     const form = useForm({
@@ -52,6 +53,7 @@ const ConfirmShipment = () => {
         const resp = await APIServices.post(`deliveries/drivers/shipments/${shipmentId}/proofs/`, session?.accessToken, formData);
         if(resp.success){
             toast.success("Proof submitted successfully.");
+            router.push("/confirm");
         } else {
             toast.error("An error occured");
         }
