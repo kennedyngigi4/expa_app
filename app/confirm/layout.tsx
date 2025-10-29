@@ -9,20 +9,20 @@ const ConfirmLayout = ({ children }: { children: React.ReactNode}) => {
     const router = useRouter();
     const [ isReady, setIsReady ] = useState(false);
         
-    // useEffect(() => {
-    //     if (status === "loading" ) return;
-    //     const role = session?.user?.role;
+    useEffect(() => {
+        if (status === "loading" ) return;
+        const role = session?.user?.role;
 
-    //     if (role !== "partner_rider" &&
-    //         role !== "manager" &&
-    //         role !== "driver" &&
-    //         role !== "admin" ){
-    //         router.push("/auth/login");
-    //     } else {
-    //         router.push("/confirm");
-    //         setIsReady(true);
-    //     }
-    // }, [status, router, session]);
+        if (role !== "partner_rider" &&
+            role !== "manager" &&
+            role !== "driver" &&
+            role !== "admin" ){
+            router.push("/auth/login");
+        } else {
+            router.push("/confirm/shipment/MF6DEG7GK6");
+            setIsReady(true);
+        }
+    }, [status, router, session]);
 
     return (
         <section className='min-h-screen px-20 py-10'>
