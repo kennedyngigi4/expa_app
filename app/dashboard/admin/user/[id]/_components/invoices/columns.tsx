@@ -7,9 +7,63 @@ import { APIServices } from "@/lib/utils/api_services"
 import { ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { Checkbox } from "@/components/ui/checkbox"
+
 
 
 export const InvoiceColumns: ColumnDef<InvoiceModel>[] = [
+    
+    {
+        id: "select",
+        header: ({table}) => {
+            const allRows = table.getRowModel().rows;
+            const selectableRows = allRows.filter((row) => {
+                const status = row.original.status;
+                const isSelectable = (status === "pending" || status === "unpaid");
+                return isSelectable;
+            });
+
+            const allSelectableSelected =
+                selectableRows.length > 0 &&
+                selectableRows.every((row) => row.getIsSelected());
+
+            const someSelectableSelected = selectableRows.some((row) =>
+                row.getIsSelected()
+            );
+
+            return (
+                <Checkbox
+                    checked={
+                        allSelectableSelected
+                            ? true
+                            : someSelectableSelected
+                                ? "indeterminate"
+                                : false
+                    }
+                    onCheckedChange={(value) => {
+                        selectableRows.forEach((row) => row.toggleSelected(!!value));
+                    }}
+                    aria-label="Select all selectable rows"
+                    disabled={selectableRows.length === 0}
+                />
+            );
+        },
+        cell: ({row}) => {
+            const status = row.original.status;
+            const isSelectable = (status === "pending" || status === "unpaid");
+
+            return (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    disabled={!isSelectable}
+                />
+            );
+        },
+        enableSorting: false,
+        enableHiding: false,
+    },
     {
         accessorKey: "invoice_id",
         header: "Invoice ID",

@@ -48,11 +48,15 @@ const adminRoutes = [
         href: "/dashboard/admin/shipments",
     },
     {
+        icon: File,
+        label: "Invoices",
+        href: "/dashboard/admin/consolidated-invoices",
+    },
+    {
         icon: Landmark,
         label: "Payments",
         href: "/dashboard/admin/payments",
     },
-
     {
         icon: SlidersHorizontal,
         label: "Settings",

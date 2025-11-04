@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSession } from "next-auth/react";
+import { APIServices } from "@/lib/utils/api_services";
 
 interface InvoiceDataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -32,7 +34,7 @@ export function InvoiceDataTable<TData, TValue>({
     columns,
     data,
 }: InvoiceDataTableProps<TData, TValue>) {
-
+    const {data:session} = useSession();
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -49,56 +51,101 @@ export function InvoiceDataTable<TData, TValue>({
                 month: false,
             },
         },
-    })
+    });
+
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const selectedInvoicesIds = table.getFilteredSelectedRowModel().rows.map((row) => row?.original?.id);
+
+    const handleInvoiceConsolidation = async() => {
+        console.log(selectedInvoicesIds);
+        const client_id = selectedRows[0]?.original?.client?.id;
+        try{    
+            if(!session?.accessToken) return;
+            
+
+            const body = {
+                client_id,
+                "invoice_ids": selectedInvoicesIds,
+            }
+
+            const resp = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/payments/superadmin/consolidate/`, {
+                method: "POST",
+
+                headers: {
+                    "Authorization": `Token ${session?.accessToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            });
+            const data = await resp.json();
+            console.log(data);
+        }catch(e){
+            console.log(e);
+        }
+    }
+
 
     return (
         <div>
-            {/* Filter Row */}
-            <div className="flex items-center gap-4 py-4">
-                {/* Invoice ID Search */}
-                <Input
-                    placeholder="Filter Invoice ID..."
-                    value={(table.getColumn("invoice_id")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("invoice_id")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
+            
+            <div className="flex items-center justify-between gap-4 py-4">
+                <div className="flex items-center gap-4 py-4">
+                    {/* Invoice ID Search */}
+                    <Input
+                        placeholder="Filter Invoice ID..."
+                        value={(table.getColumn("invoice_id")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("invoice_id")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
 
-                {/* Month Filter */}
-                <Select onValueChange={(value) => table.getColumn("month")?.setFilterValue(value)}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="1">January</SelectItem>
-                        <SelectItem value="2">February</SelectItem>
-                        <SelectItem value="3">March</SelectItem>
-                        <SelectItem value="4">April</SelectItem>
-                        <SelectItem value="5">May</SelectItem>
-                        <SelectItem value="6">June</SelectItem>
-                        <SelectItem value="7">July</SelectItem>
-                        <SelectItem value="8">August</SelectItem>
-                        <SelectItem value="9">September</SelectItem>
-                        <SelectItem value="10">October</SelectItem>
-                        <SelectItem value="11">November</SelectItem>
-                        <SelectItem value="12">December</SelectItem>
-                    </SelectContent>
-                </Select>
+                    {/* Month Filter */}
+                    <Select onValueChange={(value) => table.getColumn("month")?.setFilterValue(value)}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Filter by Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">January</SelectItem>
+                            <SelectItem value="2">February</SelectItem>
+                            <SelectItem value="3">March</SelectItem>
+                            <SelectItem value="4">April</SelectItem>
+                            <SelectItem value="5">May</SelectItem>
+                            <SelectItem value="6">June</SelectItem>
+                            <SelectItem value="7">July</SelectItem>
+                            <SelectItem value="8">August</SelectItem>
+                            <SelectItem value="9">September</SelectItem>
+                            <SelectItem value="10">October</SelectItem>
+                            <SelectItem value="11">November</SelectItem>
+                            <SelectItem value="12">December</SelectItem>
+                        </SelectContent>
+                    </Select>
 
 
-                {/* Status Filter */}
-                <Select
-                    onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}
-                >
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="pending">Unpaid</SelectItem>
-                    </SelectContent>
-                </Select>
+                    {/* Status Filter */}
+                    <Select
+                        onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Filter by Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="paid">Paid</SelectItem>
+                            <SelectItem value="pending">Unpaid</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+
+                <div>
+                    <Button 
+                        className="cursor-pointer"
+                        onClick={handleInvoiceConsolidation}
+                        disabled={selectedInvoicesIds.length === 0}
+                    >
+                        Consolidate
+                    </Button>
+                </div>
             </div>
 
             {/* Table */}

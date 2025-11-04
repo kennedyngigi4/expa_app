@@ -73,8 +73,6 @@ export function DataTable<TData, TValue>({
     const [ officeOptions, setOfficeOptions ] = useState([]);
     const [ courierOptions, setCourierOptions ] = useState([]);
 
-    
-
 
     useEffect(() => {
         const fetchData = async() => {

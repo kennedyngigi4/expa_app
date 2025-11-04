@@ -41,7 +41,7 @@ export const columns: ColumnDef<ShipmentModel>[] = [
             return (
                 <p>
                     {shipmentType === "delivery" && "Last mile"}
-                    {shipmentType === "pickup" && "Fast mile"}
+                    {shipmentType === "pickup" && "First mile"}
                     {shipmentType === "transfer" && "Line haul"}
                 </p>
             )

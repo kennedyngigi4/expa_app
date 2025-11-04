@@ -431,6 +431,25 @@ const CreatePackagePage = () => {
     }
   }
 
+
+  const deliveryTypes = [
+    {
+      name: "intra_city",
+      title: "ExPa Same City Delivery",
+      description: "Delivery within the same city.",
+    },
+    {
+      name: "inter_county",
+      title: "ExPa Cross-County Delivery",
+      description: "This is delivery from one county to another, e.g. Nairobi - Garissa",
+    },
+    {
+      name: "international",
+      title: "ExPa Cross-Border Delivery",
+      description: "International deliveries, i.e from Kenya to another country.",
+    },
+  ]
+
   return (
     <section className="min-h-screen">
 
@@ -500,10 +519,10 @@ const CreatePackagePage = () => {
                 <div className='pb-5'>
                   <h1 className='font-semibold pb-1'>Choose Delivery Type</h1>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {['intra_city', 'inter_county', 'international'].map((item) => (
-                      <div className={cn('flex flex-col p-6 rounded-2xl border-2 border-slate-200 cursor-pointer', selectedDelivery==item.toString() ? "bg-orange-50 border-2 border-orange-400" : "" )} key={item} onClick={() => handleSelectedDelivery(item)}>
-                        <h1 className="capitalize font-semibold text-primary pb-5">{item.replace("_"," ")}</h1>
-                        <p className='text-slate-500 capitalize'>{item.replace("_", " ")}</p>
+                    {deliveryTypes.map((item) => (
+                      <div className={cn('flex flex-col p-6 rounded-2xl border-2 border-slate-200 cursor-pointer', selectedDelivery==item.name.toString() ? "bg-orange-50 border-2 border-orange-400" : "" )} key={item.name} onClick={() => handleSelectedDelivery(item.name)}>
+                        <h1 className="capitalize font-semibold text-primary pb-5">{item.title}</h1>
+                        <p className='text-slate-500 text-xs'>{item.description}</p>
                       </div>
                     ))}
                   </div>

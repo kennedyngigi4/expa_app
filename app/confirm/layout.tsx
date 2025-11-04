@@ -19,13 +19,13 @@ const ConfirmLayout = ({ children }: { children: React.ReactNode}) => {
             role !== "admin" ){
             router.push("/auth/login");
         } else {
-            router.push("/confirm/shipment/MF6DEG7GK6");
+            
             setIsReady(true);
         }
     }, [status, router, session]);
 
     return (
-        <section className='min-h-screen px-20 py-10'>
+        <section className='min-h-screen md:px-20 px-4 py-10'>
             {children}
         </section>
     );
