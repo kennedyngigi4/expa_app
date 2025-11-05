@@ -123,7 +123,7 @@ const ClientPage = () => {
       <div className="grid md:grid-cols-2 grid-cols-1 md:px-30 px-12 py-10">
         <div className='relative shadow rounded-l-2xl p-6'>
           <Image
-            src="/images/others/fullload.jpg"
+            src="/images/others/fullload.jpeg"
             alt="EXPA"
             fill
             className="object-cover md:object-center"
