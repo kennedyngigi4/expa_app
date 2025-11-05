@@ -619,7 +619,7 @@ const CreatePackagePage = () => {
                                   </SelectContent>
                                 </Select>
                               </FormControl>
-                              <FormDescription className='text-red-500 text-xs'>Please note: Packaging services may incur additional costs. The final amount will be communicated by our admin team. <br /> We are not liable for any damages.</FormDescription>
+                              
                               <FormMessage />
                             </FormItem>
                           )}
