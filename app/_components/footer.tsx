@@ -56,7 +56,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-row space-x-2">
             <MapPin size={20} />
-            <p>Expa House, Mai Mahiu Rd, South C, Nairobi</p>
+            <p>ExPa House, Mai Mahiu Rd, South C, Nairobi</p>
           </div>
         </div>
 

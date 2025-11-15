@@ -55,7 +55,7 @@ const PackagesPage = () => {
         
         <div className="relative flex-1 h-full overflow-hidden max-md:hidden">
           <Image
-            src="/icons/avatar.png"
+            src="/icons/hero.png"
             alt="EXPA"
             fill
             className="object-contain md:object-right"
