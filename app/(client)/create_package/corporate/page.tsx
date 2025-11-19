@@ -24,21 +24,20 @@ const itemSchema = z.object({
     destination: z.string().min(1, "Name is required."),
     destination_latLng: z.string(),
     weight: z.string().min(1, "Weight is required."),
-    description: z.string().min(1, "Description is required."),
     price: z.string().optional(),
+    no_items: z.string(),
+    recipient_name: z.string().min(1, "Recipient name is required."),
+    recipient_phone: z.string().min(1, "Recipient phone is required."),
 })
 
 const formSchema = z.object({
     name: z.string().min(4, { message: "Name must be at least 4 characters"}),
-    is_fragile: z.string(),
+    is_fragile: z.string().min(1, "Choose an option"),
     requires_packaging: z.string().optional(),
-    weight: z.string(),
+    weight: z.string().min(1, "Weight is required."),
     vehicle_type: z.string(),
     requires_pickup: z.string(),
     pickup_date: z.string(),
-    recipient_name: z.string().min(1, "Recipient name is required."),
-    recipient_phone: z.string().min(1, "Recipient phone is required."),
-    recipient_address: z.string().min(1, "Recipient address is required."),
     recipient_latLng: z.string(),
     description: z.string().optional(),
     items: z.array(itemSchema).min(1, "At least one item is required")
@@ -67,12 +66,9 @@ const CorporatePackageOrder = () => {
             vehicle_type: "",
             requires_pickup: "",
             pickup_date: "",
-            recipient_name: "",
-            recipient_phone: "",
-            recipient_address: "",
             recipient_latLng: "",
             description: "",
-            items: [{destination: "", destination_latLng: "", weight: "", description: "", price: ""}]
+            items: [{ destination: "", destination_latLng: "", weight: "", price: "", no_items: "", recipient_name: "", recipient_phone: "" }]
         },
         mode: "onChange",
         shouldUnregister: false,
@@ -137,7 +133,7 @@ const CorporatePackageOrder = () => {
                 break;
             case "items":
                 const detailsValidation = await form.trigger([
-                    "name", "is_fragile", "vehicle_type", "weight", "recipient_name", "recipient_phone", "recipient_address"
+                    "name", "is_fragile", "vehicle_type", "weight"
                 ])
 
                 if (detailsValidation) {
@@ -145,11 +141,28 @@ const CorporatePackageOrder = () => {
                 }
                 break;
             case "prices":
-                setActiveTab(value);
+                const items = form.getValues("items");
+
+                const fieldsToValidate = items.flatMap((_, index) => [
+                    `items.${index}.destination`,
+                    `items.${index}.destination_latLng`,
+                    `items.${index}.weight`,
+                    `items.${index}.price`,
+                    `items.${index}.no_items`,
+                    `items.${index}.recipient_name`,
+                    `items.${index}.recipient_phone`,
+                ]);
+                const itemsValid = await form.trigger(fieldsToValidate);
+
+                if(itemsValid){
+                    setActiveTab(value);
+                }
+                
 
                 
+                
                 const weight = form.getValues("weight");
-                const destination = form.getValues("recipient_address"); 
+                // const destination = form.getValues("recipient_address"); 
                 const recipient_latLng = form.getValues("recipient_latLng");
 
                 // if (weight && recipient_latLng) {
@@ -171,6 +184,7 @@ const CorporatePackageOrder = () => {
 
 
             const resp = await APIServices.post("corporate/calculate_price/", session?.accessToken, formData);
+            console.log(resp);
             if(resp?.price){
                 setValue(`items.${index}.price`, resp.price.toString());
             } else {
@@ -200,10 +214,10 @@ const CorporatePackageOrder = () => {
         formData.append("vehicle_type", values.vehicle_type);
         formData.append("requires_pickup", values.requires_pickup);
         formData.append("pickup_date", values.pickup_date);
-        formData.append("recipient_name", values.recipient_name);
-        formData.append("recipient_phone", values.recipient_phone);
-        formData.append("recipient_address", values.recipient_address);
-        formData.append("recipient_latLng", values.recipient_latLng);
+        // formData.append("recipient_name", values.recipient_name);
+        // formData.append("recipient_phone", values.recipient_phone);
+        // formData.append("recipient_address", values.recipient_address);
+        // formData.append("recipient_latLng", values.recipient_latLng);
         formData.append("description", values.description);
         formData.append("delivery_type", selectedDelivery);
         formData.append("package_items", JSON.stringify(values.items));
@@ -389,7 +403,7 @@ const CorporatePackageOrder = () => {
                                                             </Select>
 
                                                         </FormControl>
-                                                        <FormDescription className='text-red-500 text-xs'>Please note: Packaging services may incur additional costs. The final amount will be communicated by our admin team. <br /> We are not liable for any damages.</FormDescription>
+                                                        
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
@@ -413,7 +427,7 @@ const CorporatePackageOrder = () => {
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {vehicleTypes.map((item: any) => (
-                                                                <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
+                                                                <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
@@ -426,7 +440,7 @@ const CorporatePackageOrder = () => {
                                         control={form.control}
                                         render={({field}) => (
                                             <FormItem>
-                                                <FormLabel>Weight</FormLabel>
+                                                <FormLabel>Total Weight</FormLabel>
                                                 <FormControl>
                                                     <Input 
                                                         type="text"
@@ -480,54 +494,7 @@ const CorporatePackageOrder = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className='grid grid-cols-1 md:grid-cols-4 gap-4 pt-4'>
-                                    <FormField 
-                                        name="recipient_name"
-                                        control={form.control}
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Recipient Name</FormLabel>
-                                                <FormControl>
-                                                    <Input 
-                                                        type="text"
-                                                        placeholder="e.g John Doe"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        name="recipient_phone"
-                                        control={form.control}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Recipient Phone</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="e.g +254722..."
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        name="recipient_address"
-                                        control={form.control}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Recipient Address</FormLabel>
-                                                <FormControl>
-                                                    <LocationSearch value={field.value} onChange={field.onChange} onLatLngChange={(lat, lng) => { setValue("recipient_latLng", `${lat.toString()},${lng.toString()}`) }} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                
                                 <div className='mt-4'>
                                     <FormField 
                                         name="description"
@@ -536,7 +503,7 @@ const CorporatePackageOrder = () => {
                                             <FormItem>
                                                 <FormLabel>Description</FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder="Enter description here" rows={5} {...field}></Textarea>
+                                                    <Textarea placeholder="What are the items" rows={5} {...field}></Textarea>
                                                 </FormControl>
                                             </FormItem>
                                         )}
@@ -583,7 +550,7 @@ const CorporatePackageOrder = () => {
                                                                 <FormLabel>Weight <span className='text-xs'></span></FormLabel>
                                                                 <FormControl>
                                                                     <Input
-                                                                        placeholder='Enter item name'
+                                                                        placeholder='Enter weight'
                                                                         {...field}
                                                                         onChange={async (e) => {
                                                                             field.onChange(e);
@@ -602,18 +569,57 @@ const CorporatePackageOrder = () => {
                                                         )}
                                                     />
                                                 </div>
-
-                                                <div className='md:col-span-5'>
-                                                    {/* Description */}
+                                                <div className='md:col-span-1'>
+                                                    {/* No of items */}
                                                     <FormField
                                                         control={form.control}
-                                                        name={`items.${index}.description`}
+                                                        name={`items.${index}.no_items`}
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>Description</FormLabel>
+                                                                <FormLabel>No. of items <span className='text-xs'></span></FormLabel>
                                                                 <FormControl>
-                                                                    <Textarea
-                                                                        placeholder='Description here'
+                                                                    <Input
+                                                                        placeholder='Enter items count'
+                                                                        {...field}  
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+
+                                                <div className='md:col-span-2'>
+                                                    {/* recipient_name */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`items.${index}.recipient_name`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Recipient name</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder='Enter recipient name'
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+
+                                                <div className='md:col-span-2'>
+                                                    {/* recipient_phone */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`items.${index}.recipient_phone`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Recipient phone</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder='Enter recipient phone'
                                                                         {...field}
                                                                     />
                                                                 </FormControl>
@@ -690,8 +696,8 @@ const CorporatePackageOrder = () => {
                                     <CardContent>
                                         {totalPrice ? (
                                             <>
-                                                <p>Route: <span className="text-slate-500 text-sm">{form.getValues("recipient_address")}</span></p>
-                                                <p>Price: <span className="text-slate-500 text-sm">KES {totalPrice?.toLocaleString()}</span></p>
+                                                <p>Thank you for choosing ExPa</p>
+                                                <p className='pt-4'>Price: <span className="text-slate-500 text-sm">KES {totalPrice?.toLocaleString()}</span></p>
                                             </>
                                         ) : <>
                                             <div className="text-red-500 flex flex-col justify-center items-center space-y-5">

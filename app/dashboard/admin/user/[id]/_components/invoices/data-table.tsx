@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
 import { APIServices } from "@/lib/utils/api_services";
+import { useRouter } from "next/navigation";
 
 interface InvoiceDataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -35,6 +36,7 @@ export function InvoiceDataTable<TData, TValue>({
     data,
 }: InvoiceDataTableProps<TData, TValue>) {
     const {data:session} = useSession();
+    const router = useRouter();
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -79,6 +81,7 @@ export function InvoiceDataTable<TData, TValue>({
             });
             const data = await resp.json();
             console.log(data);
+            router.push("/dashboard/admin/consolidated-invoices")
         }catch(e){
             console.log(e);
         }

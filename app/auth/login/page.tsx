@@ -148,7 +148,7 @@ const LoginPage = () => {
                             </form>
                         </Form>
 
-                        <p className='flex flex-row pt-5'>No registered? <Link className='text-primary ps-1' href="/auth/registration"> Register</Link></p>
+                        <p className='flex flex-row pt-5'>Not registered? <Link className='text-primary ps-1' href="/auth/registration"> Register</Link></p>
                     </div>
                 </CardContent>
                 

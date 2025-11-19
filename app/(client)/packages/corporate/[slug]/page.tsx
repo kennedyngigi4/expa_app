@@ -63,18 +63,12 @@ const CorporatePackageDetails = () => {
             <h1 className="text-slate-500">Delivery Type</h1>
             <p className='capitalize'>{packageData?.delivery_type.replace("_", " ")}</p>
           </div>
-          <div className='border border-gray-100 p-4'>
-            <h1 className="text-slate-500">Package Type</h1>
-            <p className='capitalize'>{packageData?.package_type_name}</p>
-          </div>
+          
           <div className='border border-gray-100 p-4'>
             <h1 className="text-slate-500">Fragile</h1>
             <p>{packageData?.is_fragile ? (<>Not Fragile</>) : (<>Fragile</>)}</p>
           </div>
-          <div className='border border-gray-100 p-4'>
-            <h1 className="text-slate-500">Urgency</h1>
-            <p>{packageData?.urgency_name}</p>
-          </div>
+          
           {packageData?.length && (
             <div className='border border-gray-100 p-4'>
               <h1 className="text-slate-500">Length (cm)</h1>
@@ -102,22 +96,30 @@ const CorporatePackageDetails = () => {
         </div>
       </div>
 
-      <div className='grid md:grid-cols-2 grid-cols-1 gap-8'>
+      <div className='grid md:grid-cols-1 grid-cols-1 gap-8'>
         <div className=''>
-          <h1 className='text-primary font-semibold pb-1'>Package Items</h1>
+          <h1 className='text-primary font-semibold pb-1'>Items</h1>
           {packageData?.package_items?.map((item: any) => (
-            <div className="grid md:grid-cols-3 grid-cols-1 border-b border-slate-100 pb-3" key={item.name}>
+            <div className="grid md:grid-cols-5 grid-cols-1 border-b border-slate-100 pb-3 gap-10" key={item.name}>
               <div>
-                <p className='text-slate-400 text-sm'>Name</p>
-                <p>{item?.name}</p>
+                <p className='text-slate-400 text-sm'>Destination</p>
+                <p>{item?.destination}</p>
               </div>
               <div>
                 <p className='text-slate-400 text-sm'>Weight</p>
                 <p>{item?.weight}</p>
               </div>
               <div>
-                <p className='text-slate-400 text-sm'>Description</p>
-                <p>{item?.description}</p>
+                <p className='text-slate-400 text-sm'>No. of items</p>
+                <p>{item?.no_items}</p>
+              </div>
+              <div>
+                <p className='text-slate-400 text-sm'>Recipient</p>
+                <p>{item?.recipient_name}</p>
+              </div>
+              <div>
+                <p className='text-slate-400 text-sm'>Recipient Phone</p>
+                <p>{item?.recipient_phone}</p>
               </div>
             </div>
           ))}

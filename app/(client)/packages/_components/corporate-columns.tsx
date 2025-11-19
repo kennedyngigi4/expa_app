@@ -34,22 +34,22 @@ export const CorporateColumns: ColumnDef<PackageModel>[] = [
         },
     },
     {
-        accessorKey: "recipient_name",
+        accessorKey: "name",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Recipient
+                    Package Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
     },
     {
-        accessorKey: "recipient_address",
-        header: "Destination",
+        accessorKey: "weight",
+        header: "Total Weight (kgs)",
     },
     {
         accessorKey: "is_paid",

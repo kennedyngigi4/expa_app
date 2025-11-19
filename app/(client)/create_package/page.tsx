@@ -812,10 +812,10 @@ const CreatePackagePage = () => {
                         <FormItem>
                           <FormLabel>Recipient Phone</FormLabel>
                           <FormControl>
-                            <Input
-                              type="tel"
-                              placeholder='e.g. 254722....'
-                              className='bg-white'
+                            <PhoneInput 
+                              international
+                              defaultCountry="KE"
+                              className="border rounded-lg px-3 py-2"
                               {...field}
                             />
                           </FormControl>
