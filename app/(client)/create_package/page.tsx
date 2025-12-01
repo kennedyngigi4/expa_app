@@ -33,7 +33,7 @@ const formSchema = z.object({
   length: z.string().optional(),
   width: z.string().optional(),
   height: z.string().optional(),
-  weight: z.string().optional(),
+  weight: z.string().min(1, "Weight is required"),
   pickup_date: z.string().min(1, { message: "Pickup Date is required." }),
   sender_address: z.string().min(1, { message: "Pickup location is required." }),
   sender_latLng: z.string().optional(),
@@ -119,9 +119,7 @@ const CreatePackagePage = () => {
     setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
   }
 
-  const handleSelectedSize = async(value: any) => {
-    setSelectedSize(value);
-  }
+ 
 
   const handleSelectedDelivery = async(value: any) => {
     setSelectedDelivery(value);
@@ -138,19 +136,29 @@ const CreatePackagePage = () => {
         if (selectedDelivery == ""){
           toast.error("Delivery Type is required.");
           return;
-        } else if (selectedSize == ""){
-          toast.error("Package Size Type is required.");
-          return;
-        }
+        } 
         setActiveTab(value);
         break;
       case "recipient":
         
-        const detailsValid = await form.trigger(["name", "is_fragile", "sender_address", "pickup_date"]);
+        const detailsValid = await form.trigger(["name", "is_fragile", "weight", "sender_address", "pickup_date"]);
 
-        if (detailsValid){
-          setActiveTab(value);
+        if(!detailsValid){
+          return;
         }
+
+        const weightValue = parseFloat(formValues.weight || "0");
+
+        if (weightValue > 50.99) {
+          if (!formValues.length || !formValues.width || !formValues.height) {
+            toast.error("Length, width & height dimensions are required.");
+            return;
+          }
+
+        }
+        
+        
+        setActiveTab(value);
         break;
 
       case "preview":
@@ -172,53 +180,26 @@ const CreatePackagePage = () => {
           
 
           if (selectedDelivery == "intra_city"){
-            if(selectedSize == "1"){
-              intracityPriceCalculator({
-                sender_latLng: formData.sender_latLng,
-                recipient_latLng: formData.recipient_latLng,
-                size_category: selectedSize,
-                weight: formData.weight,
-                length: 0,
-                width: 0,
-                height: 0,
-              });
-            } else {
-              intracityPriceCalculator({
-                sender_latLng: formData.sender_latLng,
-                recipient_latLng: formData.recipient_latLng,
-                size_category: selectedSize,
-                weight: formData.weight,
-                length: formData.length,
-                width: formData.width,
-                height: formData.height,
-              });
-            }
+            intracityPriceCalculator({
+              sender_latLng: formData.sender_latLng,
+              recipient_latLng: formData.recipient_latLng,
+              weight: formData.weight,
+              length: formData.length === "" ? 0.00 : formData.length,
+              width: formData.width === "" ? 0.00 : formData.width,
+              height: formData.height === "" ? 0.00 : formData.height,
+            });
+            
           } else if (selectedDelivery == "inter_county") {
-            if (selectedSize == "1") {
-              intercountyPriceCalculator({
-                sender_latLng: formData.sender_latLng,
-                recipient_latLng: formData.recipient_latLng,
-                size_category: selectedSize,
-                weight: formData.weight,
-                length: "1",
-                width: "1",
-                height: "1",
-                requires_last_mile: formData.requires_last_mile,
-                requires_pickup: "true",
-              });
-            } else if (selectedSize == "2") {
-              intercountyPriceCalculator({
-                sender_latLng: formData.sender_latLng,
-                recipient_latLng: formData.recipient_latLng,
-                size_category: selectedSize,
-                weight: formData.weight,
-                length: formData.length,
-                width: formData.width,
-                height: formData.height,
-                requires_last_mile: formData.requires_last_mile,
-                requires_pickup: "true",
-              });
-            }
+            intercountyPriceCalculator({
+              sender_latLng: formData.sender_latLng,
+              recipient_latLng: formData.recipient_latLng,
+              weight: formData.weight,
+              length: formData.length === "" ? 0.00 : formData.length,
+              width: formData.width === "" ? 0.00 : formData.width,
+              height: formData.height === "" ? 0.00 : formData.height,
+              requires_last_mile: formData.requires_last_mile,
+              requires_pickup: "true",
+            });
           }
           
           setActiveTab(value);
@@ -275,7 +256,7 @@ const CreatePackagePage = () => {
   const formValues = form.watch();
 
   const onSubmit = async(values: z.infer<typeof formSchema>) => {
-    console.log("Uploading .....", totalFee);
+    
 
     if(!session?.accessToken){
       throw new Error("You must be logged in.");
@@ -283,7 +264,7 @@ const CreatePackagePage = () => {
     
     try{
       const formData = new FormData();
-      formData.append("size_category", selectedSize);
+      
       formData.append("name", values.name);
       formData.append("is_fragile", values.is_fragile);
       formData.append("pickup_date", pickupNow ? new Date().toISOString() : String(values.pickup_date));
@@ -302,6 +283,11 @@ const CreatePackagePage = () => {
       
       if (values.requires_packaging) {
         formData.append("requires_packaging", values.requires_packaging);
+      }
+
+
+      if(selectedSize){
+        formData.append("size_category", selectedSize);
       }
 
       if(totalFee){
@@ -379,7 +365,6 @@ const CreatePackagePage = () => {
   const intracityPriceCalculator = async (payload: {
     sender_latLng: any;
     recipient_latLng: any;
-    size_category: string;
     weight: any;
     length: any;
     width: any;
@@ -393,6 +378,7 @@ const CreatePackagePage = () => {
       const res = await APIServices.intracity("deliveries/intracity_pricing/", session?.accessToken, payload);
       console.log(res);
       if(res.success){
+        setSelectedSize(res.size_category)
         setTotalFee(res.total_fee);
         setDistancekm(res.distance_km);
       } else {
@@ -404,7 +390,6 @@ const CreatePackagePage = () => {
   const intercountyPriceCalculator = async(payload: {
     sender_latLng: any;
     recipient_latLng: any;
-    size_category: string;
     weight: any;
     length: any;
     width: any;
@@ -419,8 +404,9 @@ const CreatePackagePage = () => {
     }
 
     const res = await APIServices.intracity("deliveries/intercounty_pricing/", session?.accessToken, payload);
-    console.log(res);
+    
     if (res.success) {
+      setSelectedSize(res.size_category)
       setPickupPrice(res.pickup_fee);
       setEstimatedPrice(res.base_fee);
       setLastMileFee(res.last_mile_fee);
@@ -529,17 +515,8 @@ const CreatePackagePage = () => {
                 </div>
 
 
-                <div className='pb-5'>
-                  <h1 className='font-semibold pb-1'>Choose Package Type</h1>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {sizeCategories.map((item) => (
-                      <div className={cn('flex flex-col p-6 rounded-2xl border-2 border-slate-200 cursor-pointer', selectedSize == item.id.toString() ? "bg-orange-50 border-2 border-orange-400" : "")} key={item.id} onClick={() => handleSelectedSize(item.id)}>
-                        <h1 className="capitalize font-semibold text-primary pb-5">{item.name}</h1>
-                        <p className='text-slate-500'>{item.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                
+                
 
                 <div className='py-5'>
                   <Button type="button" className='bg-orange-400 cursor-pointer' onClick={() => handleNext("details")}>Next</Button>
@@ -627,7 +604,28 @@ const CreatePackagePage = () => {
                       </div>
                     )}
 
-                    {selectedSize.toString() !== "1" && (
+                    <div className='col-span-3'>
+                      <FormField
+                        name="weight"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Weight (kgs)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="e.g. 10"
+                                className="bg-white"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {parseInt(formValues?.weight) > 50 && (
                       <>
                       <div className='col-span-3'>
                         <FormField 
@@ -693,26 +691,7 @@ const CreatePackagePage = () => {
                     )}
 
 
-                      <div className='col-span-3'>
-                        <FormField
-                          name="weight"
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Weight (kgs)</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  placeholder="e.g. 10"
-                                  className="bg-white"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                      
                   </div>
                
 
