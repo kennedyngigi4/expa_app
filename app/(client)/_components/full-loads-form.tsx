@@ -29,7 +29,7 @@ const fullLoadSchema = z.object({
 
 const FullLoadsForm = () => {
     const {data:session} = useSession();
-    const [ vehicleTypes, setVehicleTypes ] = useState<string[]>([]);
+    const [ vehicleTypes, setVehicleTypes ] = useState<any[]>([]);
     const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
     const [distance, setDistance] = useState();
     const [loadingPrice, setLoadingPrice] = useState(false);
@@ -149,9 +149,12 @@ const FullLoadsForm = () => {
                                             <SelectValue placeholder="Choose vehicle type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {vehicleTypes.map((item: any) => (
-                                                <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>
-                                            ))}
+                                            {Array.isArray(vehicleTypes) &&
+                                                vehicleTypes.map((item) => (
+                                                    <SelectItem key={item.id} value={String(item.id)}>
+                                                        {item.name}
+                                                    </SelectItem>
+                                                ))}
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
