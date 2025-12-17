@@ -24,6 +24,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
+import InternationalForm from './_components/international_form';
 
 
 const formSchema = z.object({
@@ -464,9 +465,19 @@ const CreatePackagePage = () => {
         <Tabs value={activeTab} className="w-full">
           <TabsList className="w-full flex overflow-x-auto scrollbar-hide space-x-2">
             <TabsTrigger value="images">Image & Type</TabsTrigger>
-            <TabsTrigger value="details">Package Details</TabsTrigger>
-            <TabsTrigger value="recipient">Recipient</TabsTrigger>
-            <TabsTrigger value="preview">Payments</TabsTrigger>
+            
+            {selectedDelivery != "international" ? (
+              <>
+                <TabsTrigger value="details">Package Details</TabsTrigger>
+                <TabsTrigger value="recipient">Recipient</TabsTrigger>
+                <TabsTrigger value="preview">Payments</TabsTrigger>
+              </>
+            ) : (
+              <>
+                <TabsTrigger value="details">Package Details & Payments</TabsTrigger>
+              </>
+            )}
+            
           </TabsList>
 
           <Form {...form}>
@@ -527,64 +538,38 @@ const CreatePackagePage = () => {
                   <h1 className='text-primary font-semibold text-xl'>Package Details</h1>
                   <p className='text-slate-400'>Fill all required form fields</p>
                 </div>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4'>
-                    <div className='col-span-9'>
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Package Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="e.g. 'Pair of shoes', 'Kids clothes' ...."
-                                className="bg-white"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className='col-span-3'>
-                      <FormField
-                        control={form.control}
-                        name="is_fragile"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Fragile?</FormLabel>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className='w-full'>
-                                  <SelectValue placeholder="Choose option" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="false">No</SelectItem>
-                                  <SelectItem value="true">Yes</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                </div>
-                  
-                  
-                  <div className='grid grid-cols-2 md:grid-cols-12 gap-5 pt-5'>
-                    {formValues.is_fragile == "true" && (
+
+                {selectedDelivery != "international" ? (
+                  <>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 pt-4'>
+                      <div className='col-span-9'>
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Package Name</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder="e.g. 'Pair of shoes', 'Kids clothes' ...."
+                                  className="bg-white"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
                       <div className='col-span-3'>
                         <FormField
                           control={form.control}
-                          name="requires_packaging"
+                          name="is_fragile"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Requires Packaging?</FormLabel>
+                              <FormLabel>Fragile?</FormLabel>
                               <FormControl>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <SelectTrigger className='w-full'>
@@ -596,28 +581,184 @@ const CreatePackagePage = () => {
                                   </SelectContent>
                                 </Select>
                               </FormControl>
-                              
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-                    )}
 
-                    <div className='col-span-3'>
+                    </div>
+
+
+                    <div className='grid grid-cols-2 md:grid-cols-12 gap-5 pt-5'>
+                      {formValues.is_fragile == "true" && (
+                        <div className='col-span-3'>
+                          <FormField
+                            control={form.control}
+                            name="requires_packaging"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Requires Packaging?</FormLabel>
+                                <FormControl>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className='w-full'>
+                                      <SelectValue placeholder="Choose option" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="false">No</SelectItem>
+                                      <SelectItem value="true">Yes</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
+
+                      <div className='col-span-3'>
+                        <FormField
+                          name="weight"
+                          control={form.control}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Weight (kgs)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder="e.g. 10"
+                                  className="bg-white"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {parseInt(formValues?.weight) > 50 && (
+                        <>
+                          <div className='col-span-3'>
+                            <FormField
+                              name="length"
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Length (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g. 28"
+                                      className="bg-white"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className='col-span-3'>
+                            <FormField
+                              name="width"
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Width (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g. 19"
+                                      className="bg-white"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className='col-span-3'>
+                            <FormField
+                              name="height"
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Height (cm)</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g. 15"
+                                      className="bg-white"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </>
+                      )}
+
+
+
+                    </div>
+
+
+                    <div className='grid grid-cols-1 md:grid-cols-3 gap-5 pt-5'>
+                      <div>
+                        <Label className='pb-1'>Pickup now or later?</Label>
+                        <Button variant={pickupNow ? "default" : "outline"} className='cursor-pointer' type='button' onClick={() => setPickupNow(prev => !prev)}>Pickup Now</Button>
+                      </div>
+                      <div className="">
+                        <FormField
+                          name="pickup_date"
+                          control={form.control}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Pickup Date</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="datetime-local"
+                                  className='bg-white'
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <FormField
+                          name="sender_address"
+                          control={form.control}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Pickup Location</FormLabel>
+                              <FormControl>
+                                <LocationSearch value={field.value} onChange={field.onChange} onLatLngChange={(lat, lng) => { setValue("sender_latLng", `${lat.toString()},${lng.toString()}`) }} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-5">
                       <FormField
-                        name="weight"
+                        name="description"
                         control={form.control}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Weight (kgs)</FormLabel>
+                            <FormLabel>Description (optional)</FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="e.g. 10"
-                                className="bg-white"
-                                {...field}
-                              />
+                              <Textarea placeholder='Enter description here ...' {...field}></Textarea>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -625,137 +766,17 @@ const CreatePackagePage = () => {
                       />
                     </div>
 
-                    {parseInt(formValues?.weight) > 50 && (
-                      <>
-                      <div className='col-span-3'>
-                        <FormField 
-                          name="length"
-                          control={form.control}
-                          render={({field}) => (
-                            <FormItem>
-                              <FormLabel>Length (cm)</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  placeholder="e.g. 28"
-                                  className="bg-white"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className='col-span-3'>
-                        <FormField
-                          name="width"
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Width (cm)</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  placeholder="e.g. 19"
-                                  className="bg-white"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className='col-span-3'>
-                        <FormField
-                          name="height"
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Height (cm)</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  placeholder="e.g. 15"
-                                  className="bg-white"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      </>
-                    )}
-
-
-                      
-                  </div>
-               
-
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-5 pt-5'>
-                  <div>
-                    <Label className='pb-1'>Pickup now or later?</Label>
-                    <Button variant={pickupNow ? "default" : "outline"} className='cursor-pointer' type='button' onClick={() => setPickupNow(prev => !prev)}>Pickup Now</Button>
-                  </div>
-                  <div className="">
-                    <FormField
-                      name="pickup_date"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pickup Date</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="datetime-local"
-                              className='bg-white'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <FormField
-                      name="sender_address"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pickup Location</FormLabel>
-                          <FormControl>
-                            <LocationSearch value={field.value} onChange={field.onChange} onLatLngChange={(lat, lng) => { setValue("sender_latLng", `${lat.toString()},${lng.toString()}`) }} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+                    <div className='py-5 flex space-x-15'>
+                      <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("images")}><ArrowLeft /> Back</Button>
+                      <Button type="button" className='bg-orange-400 cursor-pointer' onClick={() => handleNext("recipient")}>Next</Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <InternationalForm />
+                  </>
+                )}
                 
-                <div className="pt-5">
-                  <FormField 
-                    name="description"
-                    control={form.control}
-                    render={({field}) => (
-                      <FormItem>
-                        <FormLabel>Description (optional)</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder='Enter description here ...' {...field}></Textarea>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className='py-5 flex space-x-15'>
-                  <Button variant="ghost" type="button" className='cursor-pointer' onClick={() => handlePrevious("images")}><ArrowLeft /> Back</Button>
-                  <Button type="button" className='bg-orange-400 cursor-pointer' onClick={() => handleNext("recipient")}>Next</Button>
-                </div>
               </TabsContent>
               <TabsContent value="recipient">
                 <div className='py-3'>
