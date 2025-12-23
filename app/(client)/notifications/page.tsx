@@ -19,8 +19,9 @@ const NotificationsPage = () => {
         throw new Error("You must be logged in.");
       }
 
-      const data = await APIServices.get("messaging/customer_notifications/", session?.accessToken);
-      setNotifications(data);
+      const data = await APIServices.get("messaging/notifications/", session?.accessToken);
+      console.log(data);
+      setNotifications(data.results);
     }
     fetchData();
   }, [session]);

@@ -35,8 +35,11 @@ const PackagesPage = () => {
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
         setStatsData(stats);
       }
+
       
-      setClientPackages(clientPackages);
+
+
+      setClientPackages(clientPackages.results);
       setBusinessPackages(businessPackages);
     } 
     fetchData();

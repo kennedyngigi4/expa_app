@@ -22,11 +22,11 @@ const InvoicesPage = () => {
       }
 
       const data = await APIServices.get("payments/customer_invoices/", session?.accessToken);
-      setInvoices(data);
+      setInvoices(data.results);
 
       if (session?.user?.accounttype === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
-        setStatsData(stats);
+        setStatsData(stats.results);
       }
     }
     fetchData();
