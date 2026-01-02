@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "127.0.0.1",
       }
-    ]
+    ],
+    unoptimized: true,
   },
   eslint: {
     ignoreDuringBuilds: true
