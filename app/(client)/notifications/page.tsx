@@ -20,7 +20,6 @@ const NotificationsPage = () => {
       }
 
       const data = await APIServices.get("messaging/notifications/", session?.accessToken);
-      console.log(data);
       setNotifications(data.results);
     }
     fetchData();

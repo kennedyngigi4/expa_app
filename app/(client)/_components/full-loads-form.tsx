@@ -39,7 +39,6 @@ const FullLoadsForm = () => {
         const fetchData = async() => {
             if (!session?.accessToken) return;
             const resp = await APIServices.get("fullloads/vehicle_types/", session?.accessToken);
-            
             setVehicleTypes(resp.results);
         }
         fetchData();

@@ -29,8 +29,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         return null;
                     }
 
-                    console.log(user)
-
                     if (user.message.access) {
 
                         return user.message;
