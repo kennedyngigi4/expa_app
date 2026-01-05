@@ -25,6 +25,7 @@ import "react-phone-number-input/style.css";
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
 import InternationalForm from './_components/international_form';
+import { useProfile } from '@/hooks/profile_hook';
 
 
 const formSchema = z.object({
@@ -55,7 +56,10 @@ const formSchema = z.object({
 const CreatePackagePage = () => {
   const { data:session} = useSession();
   const router = useRouter();
+  const {profile, isLoading} = useProfile();
+
   const [ activeTab, setActiveTab ] = useState("images");
+
   const [ previewUrls, setPreviewUrls ] = useState<string[]>([]);
   const [ images, setImages ] = useState<File[]>([]);
   const [ sizeCategories, setSizeCategories ] = useState<SizeCategoryModel[]>([]);
@@ -269,8 +273,8 @@ const CreatePackagePage = () => {
       formData.append("name", values.name);
       formData.append("is_fragile", values.is_fragile);
       formData.append("pickup_date", pickupNow ? new Date().toISOString() : String(values.pickup_date));
-      formData.append("sender_name", session?.user.name);
-      formData.append("sender_phone", session?.user.phone);
+      formData.append("sender_name", profile.name);
+      formData.append("sender_phone", profile.phone);
       formData.append("sender_address", values.sender_address);
       
       formData.append("recipient_name", values.recipient_name);
@@ -348,7 +352,7 @@ const CreatePackagePage = () => {
       }
       
       const res = await APIServices.post("deliveries/add_order/", session?.accessToken, formData);
-      console.log(res);
+      
       if(res.success){
         toast.success("Upload successful!");
         router.push("/packages");

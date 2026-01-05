@@ -6,21 +6,24 @@ import React, { useEffect, useState } from 'react';
 import Navbar from './_components/navbar';
 import Footer from '../_components/footer';
 import Loader from '@/components/modals/loader';
+import { useProfile } from '@/hooks/profile_hook';
 
 
 const ClientLayout = ({ children } : { children: React.ReactNode }) => {
     const { data:session, status } = useSession();
     const router = useRouter();
+    const { profile, isLoading } = useProfile();
 
     const [ isReady, setIsReady ] = useState(false);
     
     useEffect(() => {
-        if (status === "loading" ) return;
+        if (isLoading) return;
 
         if(status === "unauthenticated"){
             router.push("/auth/login");
-        } else {
-            const role = session?.user?.role;
+        } else if(profile) {
+
+            const role = profile.role;
             switch (role) {
                 case "admin":
                     router.push("/dashboard/admin");
@@ -39,7 +42,7 @@ const ClientLayout = ({ children } : { children: React.ReactNode }) => {
 
             setIsReady(true);
         }
-    }, [status, router]);
+    }, [status, isLoading, profile?.role, router]);
 
 
 

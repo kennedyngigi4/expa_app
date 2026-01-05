@@ -206,7 +206,6 @@ const CorporatePackageOrder = () => {
 
     const onSubmit = async(values: z.infer<typeof formSchema>) => {
         
-        console.log("Sending ........");
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("is_fragile", values.is_fragile);
@@ -214,10 +213,6 @@ const CorporatePackageOrder = () => {
         formData.append("vehicle_type", values.vehicle_type);
         formData.append("requires_pickup", values.requires_pickup);
         formData.append("pickup_date", values.pickup_date);
-        // formData.append("recipient_name", values.recipient_name);
-        // formData.append("recipient_phone", values.recipient_phone);
-        // formData.append("recipient_address", values.recipient_address);
-        // formData.append("recipient_latLng", values.recipient_latLng);
         formData.append("description", values.description);
         formData.append("delivery_type", selectedDelivery);
         formData.append("package_items", JSON.stringify(values.items));

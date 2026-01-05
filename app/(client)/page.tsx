@@ -8,10 +8,12 @@ import FAQS from '../_components/faqs';
 import FullLoadsForm from './_components/full-loads-form';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useProfile } from '@/hooks/profile_hook';
 
 const ClientPage = () => {
 
   const { data:session } = useSession();
+  const { profile, isLoading } = useProfile();
   const router = useRouter();
 
   const handleDelivery = async (value: string) => {
@@ -19,12 +21,17 @@ const ClientPage = () => {
     router.push("/create_package");
   }
 
+
+  
+
+  if (isLoading) return null
+
   return (
     <section className="flex flex-col">
 
       <div className="bg-orange-100 flex md:flex-row flex-col justify-between items-center px-12 md:px-30 md:h-[300px] overflow-hidden">
         <div className="flex-1 py-5">
-          <h1 className="font-bold">Welcome back {session?.user?.name}!</h1>
+          <h1 className="font-bold">Welcome back {profile.full_name}!</h1>
 
           <div className="pt-15">
             <h1 className="font-bold text-2xl">Get Your Things Delivered</h1>

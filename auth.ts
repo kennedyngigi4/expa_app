@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                     return null;
                 } catch (e) {
-                    console.error("Authorize error", e);
+                    
                     return null;
                 }
             },
@@ -52,10 +52,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (account && user) {
                 token.accessToken = user?.access;
                 token.id = user?.id;
-                token.name = user?.full_name ?? undefined;
-                token.phone = user?.phone ?? undefined;
-                token.role = user?.role;
-                token.accounttype = user?.account_type;
             }
             return token;
         },
@@ -63,10 +59,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const t = token as JWT;
             session.accessToken = t?.accessToken as string;
             session.user.id = t?.id as string;
-            session.user.name = token?.name ?? undefined;
-            session.user.phone = token?.phone ?? undefined;
-            session.user.role = t?.role;
-            session.user.accounttype = t?.accounttype;
             return session;
         },
     },

@@ -12,9 +12,12 @@ import { CorporateTable } from './_components/corporate-table';
 import { CorporateColumns } from './_components/corporate-columns';
 import Image from 'next/image';
 import FAQS from '@/app/_components/faqs';
+import { useProfile } from '@/hooks/profile_hook';
 
 const PackagesPage = () => {
   const { data:session} = useSession();
+  const { profile, isLoading} = useProfile();
+
   const [ clientPackages, setClientPackages ] = useState<PackageModel[]>([]);
   const [ businessPackages, setBusinessPackages] = useState<PackageModel[]>([]);
   const [ statsData, setStatsData ] = useState({});
@@ -22,16 +25,15 @@ const PackagesPage = () => {
   useEffect(() => {
     const fetchData = async()=> {
 
-      if (!session?.accessToken) {
-        throw new Error("You must be logged in.");
-      }
+      if (!session?.accessToken) return;
       
       const [ clientPackages, businessPackages ] = await Promise.all([
         await APIServices.get(`deliveries/user_packages/`, session?.accessToken),
         await APIServices.get(`corporate/orders/`, session?.accessToken)
       ]);
 
-      if (session?.user?.accounttype === "business"){
+      
+      if (profile.accounttype === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
         setStatsData(stats);
       }
@@ -44,6 +46,8 @@ const PackagesPage = () => {
     } 
     fetchData();
   }, [session]);
+
+  if(isLoading) return null;
 
   return (
     <section className='flex flex-col min-h-screen'>
@@ -68,7 +72,7 @@ const PackagesPage = () => {
       </div>
 
       <div className="md:px-20 px-5">
-        {session?.user?.accounttype === "business" && (
+        {profile.accounttype === "business" && (
           <div className='grid md:grid-cols-4 grid-cols-1 gap-5 pt-8'>
             <Card className="relative overflow-hidden">
               <div className="absolute -top-4 right-2 opacity-6 pointer-events-none z-0">
