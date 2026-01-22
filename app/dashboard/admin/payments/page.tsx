@@ -16,7 +16,7 @@ const PaymentsPage = () => {
       if(!session?.accessToken) return;
 
       const response = await APIServices.get("payments/superadmin/all/", session?.accessToken);
-      setPayments(response);
+      setPayments(response.results);
     }
     fetchPayments();
   }, [session]);

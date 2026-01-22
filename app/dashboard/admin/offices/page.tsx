@@ -19,7 +19,7 @@ const OfficesPage = () => {
       }
 
       const res = await APIServices.get('account/superadmin/offices/', session?.accessToken);
-      setOffices(res);
+      setOffices(res.results);
     }
     fetchData();
   }, [session]);

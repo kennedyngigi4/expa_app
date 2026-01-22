@@ -15,11 +15,10 @@ const ShipmentsPage = () => {
 
   useEffect(() => {
     const fetchData = async() => {
-      if(!session?.accessToken){
-        throw new Error("You must be logged in.")
-      }
+      if(!session?.accessToken)return;
       const data = await APIServices.get(`deliveries/manager/shipments/?category=${category}`, session?.accessToken);
-      setShipments(data);
+      console.log(data);
+      setShipments(data.results);
     }
     fetchData();
   }, [session, category]);

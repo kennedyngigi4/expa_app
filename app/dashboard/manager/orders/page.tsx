@@ -22,8 +22,8 @@ const OrdersPage = () => {
       }
 
       const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}&delivery_type=inter_county`, session?.accessToken);
-      console.log(data);
-      setOrders(data);
+      
+      setOrders(data.results);
     }
     fetchData()
   }, [session, category]);

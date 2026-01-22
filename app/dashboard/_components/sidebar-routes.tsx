@@ -4,6 +4,7 @@ import { Layout, OctagonAlert, Package, Truck, File, Warehouse, Users, CarFront,
 import React, { useEffect, useState } from 'react';
 import SidebarItem from './sidebar-item';
 import { useSession } from 'next-auth/react';
+import { useProfile } from '@/hooks/profile_hook';
 
 
 const adminRoutes = [
@@ -143,12 +144,14 @@ const partnerRoutes = [
 const SidebarRoutes = () => {
     const [role, setRole] = useState("");
     const {data:session} = useSession();
+    const { profile, isLoading } = useProfile();
+
     const aRoutes = adminRoutes;
     const mRoutes = managerRoutes;
     const pRoutes = partnerRoutes;
 
     useEffect(() => {
-        const role = String(session?.user?.role);
+        const role = profile.role;
         setRole(role);
     }, [session]);
 

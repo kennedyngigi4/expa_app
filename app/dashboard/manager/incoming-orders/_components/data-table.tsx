@@ -84,8 +84,8 @@ export function DataTable<TData, TValue>({
 
             const offices = await APIServices.get("account/offices", session?.accessToken);
             const couriers = await APIServices.get("account/couriers", session?.accessToken);
-            setOfficeOptions(offices);
-            setCourierOptions(couriers)
+            setOfficeOptions(offices.results);
+            setCourierOptions(couriers.results)
         }
         fetchData()
     }, [session]);

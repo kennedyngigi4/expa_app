@@ -24,7 +24,7 @@ const EmployeesPage = () => {
 
       const data = await APIServices.get(`account/superadmin/users/?${query}`, session?.accessToken);
       
-      setEmployees(data);
+      setEmployees(data.results);
     }
     fetchData();
   }, [session]);

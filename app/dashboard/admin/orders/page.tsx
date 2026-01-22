@@ -15,12 +15,10 @@ const OrdersPage = () => {
 
   useEffect(() => {
     const fetchData = async() => {
-      if(!session?.accessToken){
-        throw new Error("You must be logged in.");
-      }
+      if(!session?.accessToken) return;
 
       const data = await APIServices.get("deliveries/superadmin/packages/", session?.accessToken);
-      setOrders(data);
+      setOrders(data.results);
     }
     fetchData();
   },[session]);

@@ -13,12 +13,10 @@ const NotificationsPage = () => {
 
     useEffect(() => {
         const fetchData = async() => {
-            if(!session?.accessToken){
-                throw new Error("You must be loggedin.");
-            }
+            if(!session?.accessToken)return;
             const data = await APIServices.get('messaging/notifications/', session?.accessToken);
-            console.log(data);
-            setNotifications(data);
+            
+            setNotifications(data.results);
         }
         fetchData();
     }, [session]);

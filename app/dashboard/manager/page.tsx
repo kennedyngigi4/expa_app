@@ -17,12 +17,10 @@ const ManagerHome = () => {
 
   useEffect(() => {
     const fetchData = async() => {
-      if (!session?.accessToken){
-        throw new Error("You must be logged in.");
-      }
+      if (!session?.accessToken) return;
 
       const res = await APIServices.get("deliveries/manager/dashboard/", session?.accessToken);
-      console.log(res);
+      
       setAllData(res);
     } 
     fetchData();

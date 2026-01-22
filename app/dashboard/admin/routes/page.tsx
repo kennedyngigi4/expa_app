@@ -13,13 +13,10 @@ const RoutesPage = () => {
 
   useEffect(() => {
     const fetchData = async() => {
-      if(!session?.accessToken){
-        throw new Error("You must be logged in.");
-      }
+      if(!session?.accessToken) return;
 
       const res = await APIServices.get("deliveries/superadmin/intercounty_routes/", session?.accessToken);
-      console.log(res);
-      setRoutes(res);
+      setRoutes(res.results);
     }
     fetchData();
   }, [session]);

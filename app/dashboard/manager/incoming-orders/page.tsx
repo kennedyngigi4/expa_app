@@ -16,13 +16,11 @@ const IncomingOrders = () => {
     useEffect(() => {
         const fetchData = async () => {
 
-            if (!session?.accessToken) {
-                throw new Error("You must be loggedin.");
-            }
+            if (!session?.accessToken) return;
 
             const data = await APIServices.get(`deliveries/manager/incoming_packages/?category=${category}&delivery_type=inter_county`, session?.accessToken);
-            console.log(data);
-            setOrders(data);
+            
+            setOrders(data.results);
         }
         fetchData()
     }, [session, category]);

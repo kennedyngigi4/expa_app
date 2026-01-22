@@ -15,14 +15,11 @@ const IntracityPage = () => {
     useEffect(() => {
     const fetchData = async() => {
 
-        if(!session?.accessToken){
-        throw new Error("You must be loggedin.");
-        }
-
+        if(!session?.accessToken) return;
         
         const data = await APIServices.get(`deliveries/manager/origin_packages/?category=${category}&delivery_type=intra_city`, session?.accessToken);
-        console.log();
-        setOrders(data);
+        
+        setOrders(data.results);
     }
     fetchData()
     }, [session, category]);

@@ -26,8 +26,7 @@ const DriversPage = () => {
             const query = roles.map(r => `role=${r}`).join('&');
 
             const data = await APIServices.get(`account/superadmin/users/?${query}`, session?.accessToken);
-            console.log(data);
-            setDrivers(data);
+            setDrivers(data.results);
         }
         fetchData();
     }, [session]);

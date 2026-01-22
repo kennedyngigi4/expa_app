@@ -19,7 +19,7 @@ const ClientsPage = () => {
 
             const role = "client";
             const res = await APIServices.get(`account/superadmin/users/?role=${role}`, session?.accessToken);
-            setClients(res);
+            setClients(res.results);
         }
         fetchData();
     }, [session]);

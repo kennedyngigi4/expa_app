@@ -15,13 +15,11 @@ const ShipmentsPage = () => {
 
   useEffect(() => {
     const fetchData = async() => {
-      if(!session?.accessToken){
-        throw new Error("You must be logged in.");
-      }
+      if(!session?.accessToken) return;
 
       const data = await APIServices.get("deliveries/superadmin/shipments/", session?.accessToken);
-      console.log(data);
-      setShipments(data);
+      
+      setShipments(data.results);
     }
     fetchData();
   }, [session]);
