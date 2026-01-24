@@ -12,19 +12,19 @@ const DownloadsPage = () => {
             id: 1,
             name: "ExPa Customer App",
             image: "/icons/downloads/customer.png",
-            url: "",
+            url: "https://drive.google.com/file/d/1pajufkjzS412U7DvNDA1gQspm2ZDZiV6/view?usp=sharing",
         },
         {
             id: 2,
             name: "ExPa Partner App",
             image: "/icons/downloads/rider.png",
-            url: "",
+            url: "https://drive.google.com/file/d/1zmX6kMNgeekGBVSOKTLGyGJ4wfMnyXxL/view?usp=drive_link",
         },
         {
             id: 3,
             name: "ExPa Driver App",
             image: "/icons/downloads/driver.png",
-            url: "",
+            url: "https://drive.google.com/file/d/15kXmnE7LjSAHpCpifl6lSQqCc_3EiLXf/view?usp=drive_link",
         }
     ]
 
