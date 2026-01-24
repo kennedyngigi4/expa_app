@@ -24,7 +24,7 @@ const fullLoadSchema = z.object({
     destination: z.string().min(1, "Destination is required."),
     destination_latLng: z.string(),
     weight: z.string().min(1, "Weight is required."),
-    mpesaphone: z.string().min(1, "MPesa number is required"),
+    mpesaphone: z.string().optional(),
 });
 
 const FullLoadsForm = () => {
@@ -58,53 +58,55 @@ const FullLoadsForm = () => {
     });
     const { isValid, isSubmitting } = form.formState;
 
-    const { watch, setValue } = form;
-
-    // watch fields
-    const vehicle = watch("vehicle_type");
-    const origin_latLng = watch("origin_latLng");
-    const destination_latLng = watch("destination_latLng")
-    const weight = watch("weight")
-
-
+    const { setValue } = form;
 
     // calculate price
-    useEffect(() => {
-        const calculate = async() => {
-            if (!vehicle || !origin_latLng || !destination_latLng || !weight || !session?.accessToken) {
-                setCalculatedPrice(null);
-                return;
-            }
+    
+    const calculate = async(values: z.infer<typeof fullLoadSchema>) => {
+        if(!session?.accessToken) return;
 
-            setLoadingPrice(true);
-            try {
-                const formData = new FormData();
-                formData.append("vehicle", vehicle);
-                formData.append("weight", weight);
-                formData.append("origin_latLng", origin_latLng);
-                formData.append("destination_latLng", destination_latLng);
-               
+        setLoadingPrice(true);
 
-                const resp = await APIServices.post("fullloads/price_calculator/", session.accessToken, formData);
-                console.log(resp);
-                if (!resp.success) {
-                    toast.error(resp.message || "Failed to calculate price");
-                }else if (resp?.success && resp.price) {
-                    setCalculatedPrice(resp.price);
-                    setDistance(resp.distance_km);
-                } else {
-                    setCalculatedPrice(null);
-                }
-            } catch (err) {
-                console.error("Failed to calculate price:", err);
+        try {
+            const formData = new FormData();
+            formData.append("vehicle", values.vehicle_type);
+            formData.append("weight", values.weight);
+            formData.append("origin_latLng", values.origin_latLng);
+            formData.append("destination_latLng", values.destination_latLng);
+            formData.append("destination_name", values.destination);
+            
+
+            const resp = await APIServices.post("fullloads/price_calculator/", session.accessToken, formData);
+
+            console.log(resp);
+            if (!resp.success) {
+                toast.error(resp.message || "Failed to calculate price");
+            }else if (resp?.success && resp.price) {
+                setCalculatedPrice(resp.price);
+                setDistance(resp.distance_km);
+            } else {
                 setCalculatedPrice(null);
             }
-            setLoadingPrice(false);
+        } catch (err) {
+            console.error("Failed to calculate price:", err);
+            setCalculatedPrice(null);
         }
-        calculate();
-    }, [vehicle, origin_latLng, destination_latLng, weight, session]);
+        setLoadingPrice(false);
+    }
 
     const onSubmit = async(values: z.infer<typeof fullLoadSchema>) => {
+
+        if (!values.mpesaphone) {
+            toast.error("MPesa number is required to proceed");
+            return;
+        }
+
+
+        if (!calculatedPrice) {
+            toast.error("Please calculate price first");
+            return;
+        }
+
         setLoading(true);
         if (!session?.accessToken) return;
 
@@ -253,7 +255,27 @@ const FullLoadsForm = () => {
                     {loadingPrice && <p className="text-sm text-gray-500">Calculating price...</p>}
 
                     <div className='w-full pb-8'>
-                        <Button type='submit' disabled={loading || isSubmitting} className='w-full cursor-pointer'>Book Now</Button>
+                        {calculatedPrice == null ? 
+                            <Button
+                                type="button"
+                                onClick={form.handleSubmit(calculate)}
+                                disabled={loadingPrice || isSubmitting}
+                                className="w-full"
+                            >
+                                {loadingPrice ? "Calculating..." : "Calculate Price"}
+                            </Button>
+                        : 
+                        
+                            <Button
+                                type="submit"
+                                disabled={loadingPrice || isSubmitting}
+                                className="w-full"
+                            >
+                                {loadingPrice ? "Processing..." : "Book Now"}
+                            </Button>
+                        }
+                        
+
                     </div>
                 </form>
             </Form>
