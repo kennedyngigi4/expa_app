@@ -48,7 +48,7 @@ const DownloadsPage = () => {
                         <div key={app.id} className="flex flex-col items-center justify-center shadow-lg p-10 rounded-2xl space-y-5 bg-white">
                             <Image src={app.image} alt='' width={90} height={90} />
                             <h2 className='font-semibold'>{app.name}</h2>
-                            <a href="/downloads/expa_customer.apk">
+                            <a href={app.url}>
                                 <Button className='cursor-pointer'>Click to Download <DownloadCloudIcon /></Button>
                             </a>
                         </div>
