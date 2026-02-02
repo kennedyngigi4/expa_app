@@ -93,8 +93,7 @@ const CreatePackagePage = () => {
 
         const [sizesData] = await Promise.all([
           APIServices.get('deliveries/size_category/', session?.accessToken),
-          // APIServices.get('deliveries/urgency_types/', session?.accessToken),
-          // APIServices.get('deliveries/package_types/', session?.accessToken),
+          
         ]);
         
         setSizeCategories(sizesData);

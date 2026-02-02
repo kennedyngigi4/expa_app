@@ -63,7 +63,7 @@ const Footer = () => {
 
 
       </div>
-      <div className="mt-6 pt-4 text-center border-t-2 border-white border-dotted">&copy; 2025 ExPa | All Rights Reserved</div>
+      <div className="mt-6 pt-4 text-center border-t-2 border-white border-dotted">&copy; 2026 ExPa | All Rights Reserved</div>
     </section>
   )
 }

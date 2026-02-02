@@ -24,6 +24,8 @@ const fullLoadSchema = z.object({
     destination: z.string().min(1, "Destination is required."),
     destination_latLng: z.string(),
     weight: z.string().min(1, "Weight is required."),
+    recipientname: z.string().optional(),
+    recipientphone: z.string().optional(),
     mpesaphone: z.string().optional(),
 });
 
@@ -54,6 +56,8 @@ const FullLoadsForm = () => {
             destination_latLng: "",
             weight: "",
             mpesaphone: "",
+            recipientname: "",
+            recipientphone: "",
         }
     });
     const { isValid, isSubmitting } = form.formState;
@@ -78,7 +82,7 @@ const FullLoadsForm = () => {
 
             const resp = await APIServices.post("fullloads/price_calculator/", session.accessToken, formData);
 
-            console.log(resp);
+            
             if (!resp.success) {
                 toast.error(resp.message || "Failed to calculate price");
             }else if (resp?.success && resp.price) {
@@ -88,7 +92,7 @@ const FullLoadsForm = () => {
                 setCalculatedPrice(null);
             }
         } catch (err) {
-            console.error("Failed to calculate price:", err);
+            
             setCalculatedPrice(null);
         }
         setLoadingPrice(false);
@@ -98,6 +102,18 @@ const FullLoadsForm = () => {
 
         if (!values.mpesaphone) {
             toast.error("MPesa number is required to proceed");
+            return;
+        }
+
+
+        if (!values.recipientname) {
+            toast.error("Recipient name is required to proceed");
+            return;
+        }
+
+
+        if (!values.recipientphone) {
+            toast.error("Recipient number is required to proceed");
             return;
         }
 
@@ -119,6 +135,8 @@ const FullLoadsForm = () => {
         formData.append("price", calculatedPrice?.toString());
         formData.append("distance", distance?.toString());
         formData.append("payment_phone", values.mpesaphone);
+        formData.append("recipient_name", values.recipientname);
+        formData.append("recipient_phone", values.recipientphone);
 
         const resp = await APIServices.post("fullloads/book-fullload/", session?.accessToken, formData);
         if(resp["success"]){
@@ -229,7 +247,7 @@ const FullLoadsForm = () => {
                             <div className="text-lg font-semibold text-orange-600">
                                 Estimated Price: KES {calculatedPrice.toLocaleString()}
                             </div>
-                            <div>
+                            <div className="space-y-4">
                                 <FormField
                                     control={form.control}
                                     name="mpesaphone"
@@ -246,6 +264,43 @@ const FullLoadsForm = () => {
                                             </FormControl>
                                             <FormMessage />
                                             <FormDescription>MPesa number used for payments.</FormDescription>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="recipientname"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Recipient Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="text"
+                                                    {...field}
+                                                    placeholder="Recipient name"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                            
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="recipientphone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Recipient Number</FormLabel>
+                                            <FormControl>
+                                                <PhoneInput
+                                                    international
+                                                    defaultCountry="KE"
+                                                    className="border rounded-lg px-3 py-2"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                           
                                         </FormItem>
                                     )}
                                 />

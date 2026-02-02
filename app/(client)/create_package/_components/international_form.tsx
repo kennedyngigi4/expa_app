@@ -15,6 +15,8 @@ import PhoneInput from "react-phone-number-input";
 import Link from 'next/link';
 import { APIServices } from '@/lib/utils/api_services';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useProfile } from '@/hooks/profile_hook';
 
 
 const formSchema = z.object({
@@ -32,10 +34,12 @@ const formSchema = z.object({
 
 const InternationalForm = () => {
     const {data:session} = useSession();
+    const router = useRouter();
     const [countries, setCountries ] = useState<any[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [cities, setCities] = useState<any[]>([]);
     const [quote, setQuote] = useState<any>({});
+    const {profile, isLoading} = useProfile();
 
     const form = useForm<z.infer <typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -64,8 +68,8 @@ const InternationalForm = () => {
         const fetchCountries = async() => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/international/countries/`);
             const resp = await response.json();
-            setCountries(resp);
-            
+            setCountries(resp.results);
+            console.log(resp.results)
         }
         fetchCountries();
     }, [])
@@ -81,8 +85,8 @@ const InternationalForm = () => {
             try{
                 const response = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/international/cities/${selectedCountry}/`);
                 const resp = await response.json();
-                
-                setCities(resp);
+                console.log(resp.results)
+                setCities(resp.results);
             } catch(e){
                 setCities([]);
             }
@@ -151,13 +155,14 @@ const InternationalForm = () => {
             formData.append("description", values.description);
             formData.append("mpesaphone", values.mpesaphone);
 
-            formData.append("sender_name", session?.user.name);
-            formData.append("sender_phone", session?.user.phone);
+            formData.append("sender_name", profile.name);
+            formData.append("sender_phone", profile.phone);
             formData.append("price", quote.total_fee);
 
             const res = await APIServices.post("international/add_order/", session?.accessToken, formData);
             if(res.success){
                 toast.success(res.message);
+                router.push("/packages");
             } else {
                 toast.error(res.message);
             }
@@ -168,8 +173,8 @@ const InternationalForm = () => {
     }
 
     return (
-        <Form {...form}>
-            <form className="space-y-4 mb-10">
+        <div className="space-y-4 mb-10">
+            {/* <form className="space-y-4 mb-10"> */}
 
                 <div className="grid md:grid-cols-12 grid-cols-1 gap-5">
                     <div className="col-span-8">
@@ -396,13 +401,13 @@ const InternationalForm = () => {
 
                         <div className="flex space-x-5">
                             <Link href="/packages"><Button variant="ghost" type="button" className='cursor-pointer'><ArrowLeft /> Back</Button></Link>
-                            <Button className="cursor-pointer" type="button" onClick={form.handleSubmit(onSubmit)}>Submit</Button>
+                            <Button className="cursor-pointer" type="button" disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)}>Submit</Button>
                         </div>
                     </div>
                 )}
                 
-            </form>
-        </Form>
+            {/* </form> */}
+        </div>
     )
 }
 
