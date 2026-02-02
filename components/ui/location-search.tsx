@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Loader } from "@googlemaps/js-api-loader";
+import { toast } from 'sonner';
 
 
 const loader = new Loader({
@@ -33,6 +34,19 @@ const LocationSearch = ({ value, onChange, onLatLngChange }: LocationSearchProps
 
                 autocomplete.addListener("place_changed", () => {
                     const place = autocomplete.getPlace();
+
+                    if (
+                        place.formatted_address === "Garissa County, Kenya" &&
+                        place.types?.includes("administrative_area_level_2")
+                    ) {
+                        toast.error(
+                            "That location has incorrect coordinates. Please select Garissa town or a specific area."
+                        );
+                        
+                        onChange("");
+                        return;
+                    }
+
                     const address = inputRef.current?.value || "";
 
                     let countyOrRegion = "";
