@@ -44,7 +44,7 @@ const PackagesPage = () => {
 
 
       setClientPackages(clientPackages.results);
-      setBusinessPackages(businessPackages);
+      setBusinessPackages(businessPackages.results);
     } 
     fetchData();
   }, [session]);
