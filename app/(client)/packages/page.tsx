@@ -25,6 +25,8 @@ const PackagesPage = () => {
   useEffect(() => {
     const fetchData = async()=> {
 
+      
+
       if (!session?.accessToken) return;
       
       const [ clientPackages, businessPackages ] = await Promise.all([
@@ -33,7 +35,7 @@ const PackagesPage = () => {
       ]);
 
       
-      if (profile.accounttype === "business"){
+      if (profile.account_type === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
         setStatsData(stats);
       }
@@ -72,7 +74,7 @@ const PackagesPage = () => {
       </div>
 
       <div className="md:px-20 px-5">
-        {profile.accounttype === "business" && (
+        {profile.account_type === "business" && (
           <div className='grid md:grid-cols-4 grid-cols-1 gap-5 pt-8'>
             <Card className="relative overflow-hidden">
               <div className="absolute -top-4 right-2 opacity-6 pointer-events-none z-0">

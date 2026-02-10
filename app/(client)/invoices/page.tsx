@@ -8,9 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BanknoteArrowUp, Package, File } from 'lucide-react';
 import Image from 'next/image';
 import FAQS from '@/app/_components/faqs';
+import { useProfile } from '@/hooks/profile_hook';
 
 const InvoicesPage = () => {
   const { data:session } = useSession();
+  const { profile, isLoading} = useProfile();
 
   const [invoices, setInvoices] = useState([]);
   const [ statsData, setStatsData ] = useState({});
@@ -24,7 +26,7 @@ const InvoicesPage = () => {
       const data = await APIServices.get("payments/customer_invoices/", session?.accessToken);
       setInvoices(data.results);
 
-      if (session?.user?.accounttype === "business"){
+      if (profile?.account_type === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
         setStatsData(stats.results);
       }
@@ -56,7 +58,7 @@ const InvoicesPage = () => {
       </div>
 
       <div className="md:px-20 px-5">
-        {session?.user?.accounttype === "business" && (
+        {profile?.account_type === "business" && (
           <div className='grid md:grid-cols-4 grid-cols-1 gap-5 pt-8'>
             <Card className="relative overflow-hidden">
               <div className="absolute -top-4 right-2 opacity-6 pointer-events-none z-0">

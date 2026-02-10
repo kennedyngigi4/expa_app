@@ -27,7 +27,7 @@ const formSchema = z.object({
     weight: z.string().min(1, "Weight is required."),
     recipient_name: z.string().min(1, "Recipient name is required."),
     recipient_phone: z.string().min(1, "Recipient phone is required."),
-    recipient_email: z.string().min(1, "Recipient email is required."),
+    recipient_email: z.string().optional(),
     description: z.string().optional(),
     mpesaphone: z.string().min(1, "Mpesa payment number is required.")
 })
@@ -69,7 +69,6 @@ const InternationalForm = () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/international/countries/`);
             const resp = await response.json();
             setCountries(resp.results);
-            console.log(resp.results)
         }
         fetchCountries();
     }, [])
@@ -85,7 +84,7 @@ const InternationalForm = () => {
             try{
                 const response = await fetch(`${process.env.NEXT_PUBLIC_APIURL}/international/cities/${selectedCountry}/`);
                 const resp = await response.json();
-                console.log(resp.results)
+                
                 setCities(resp.results);
             } catch(e){
                 setCities([]);
@@ -340,7 +339,7 @@ const InternationalForm = () => {
                             name="recipient_email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Recipient Email</FormLabel>
+                                    <FormLabel>Recipient Email (optional)</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="text"
@@ -361,7 +360,7 @@ const InternationalForm = () => {
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel>Description (optional)</FormLabel>
                                 <FormControl>
                                     <Textarea placeholder="Enter description here ...." className="bg-white" {...field}></Textarea>
                                 </FormControl>
