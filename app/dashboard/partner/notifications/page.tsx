@@ -21,7 +21,7 @@ const NotificationsPage = () => {
 
             const res = await APIServices.get("messaging/partnershop/notifications/", session?.accessToken);
             
-            setNotifications(res);
+            setNotifications(res.results);
         }
         fetchData();
     }, [session])

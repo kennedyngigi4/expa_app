@@ -21,8 +21,8 @@ const OrdersPage = () => {
             }
 
             const res = await APIServices.get("deliveries/partnershop/packages/", session?.accessToken);
-            console.log(res);
-            setOrders(res);
+            
+            setOrders(res.results);
         }
         fetchData();
     }, [session]);

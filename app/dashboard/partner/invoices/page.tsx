@@ -20,7 +20,7 @@ const InvoicesPage = () => {
       }
 
       const data = await APIServices.get("payments/customer_invoices/", session?.accessToken);
-      setInvoices(data);
+      setInvoices(data.results);
     } 
     fetchData();
   }, [session]);

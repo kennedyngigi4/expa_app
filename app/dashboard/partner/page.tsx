@@ -28,8 +28,8 @@ const PartnerHome = () => {
         const notificationsData = await APIServices.get("messaging/partnershop/notifications/", session?.accessToken);
         const statisticsData = await APIServices.get("account/partnershop/statistics/", session?.accessToken); 
         console.log(statisticsData)
-        setOrders(res);
-        setNotifications(notificationsData);
+        setOrders(res.results);
+        setNotifications(notificationsData.results);
         setStatistics(statisticsData);
       }
       fetchData();
