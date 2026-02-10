@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { FileSpreadsheet, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { useProfile } from "@/hooks/profile_hook"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -38,6 +39,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
     const {data:session} = useSession();
 
+    const { profile, isLoading} = useProfile();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -84,7 +86,7 @@ export function DataTable<TData, TValue>({
                 <div className="flex flex-row space-x-5 flex-wrap">
                     
                     
-                    {session?.user?.accounttype === "business" ? (
+                    {profile?.account_type === "business" ? (
                         <Link href="/create_package/corporate">
                             <Button className="cursor-pointer bg-black"><PlusCircle /> Add Order</Button>
                         </Link>
