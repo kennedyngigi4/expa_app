@@ -34,6 +34,7 @@ const PackagesPage = () => {
         await APIServices.get(`corporate/orders/`, session?.accessToken)
       ]);
 
+
       
       if (profile.account_type === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
@@ -120,7 +121,7 @@ const PackagesPage = () => {
 
 
         <div className='pt-5'>
-          {session?.user?.accounttype === "business" ? (
+          {profile?.account_type === "business" ? (
             <CorporateTable columns={CorporateColumns} data={businessPackages} />
           ) : (
             <DataTable columns={columns} data={clientPackages} />
