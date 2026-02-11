@@ -135,7 +135,7 @@ const OrderDetailsPage = () => {
         </section>
 
 
-        <div className='grid md:grid-cols-1 grid-cols-1 gap-8'>
+        <div className='grid md:grid-cols-1 grid-cols-1 gap-8 py-4'>
             <div className=''>
                 <h1 className='text-primary font-semibold pb-1'>Items</h1>
                 {packageData?.package_items?.map((item: any) => (

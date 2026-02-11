@@ -28,7 +28,7 @@ const InvoicesPage = () => {
 
       if (profile?.account_type === "business"){
         const stats = await APIServices.get('deliveries/business_stats/', session?.accessToken);
-        setStatsData(stats.results);
+        setStatsData(stats);
       }
     }
     fetchData();
