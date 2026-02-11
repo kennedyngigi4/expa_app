@@ -134,6 +134,37 @@ const OrderDetailsPage = () => {
             </div>
         </section>
 
+
+        <div className='grid md:grid-cols-1 grid-cols-1 gap-8'>
+            <div className=''>
+                <h1 className='text-primary font-semibold pb-1'>Items</h1>
+                {packageData?.package_items?.map((item: any) => (
+                    <div className="grid md:grid-cols-5 grid-cols-1 border-b border-slate-100 pb-3 gap-10" key={item.name}>
+                        <div>
+                            <p className='text-slate-400 text-sm'>Destination</p>
+                            <p>{item?.destination}</p>
+                        </div>
+                        <div>
+                            <p className='text-slate-400 text-sm'>Weight</p>
+                            <p>{item?.weight}</p>
+                        </div>
+                        <div>
+                            <p className='text-slate-400 text-sm'>No. of items</p>
+                            <p>{item?.no_items}</p>
+                        </div>
+                        <div>
+                            <p className='text-slate-400 text-sm'>Recipient</p>
+                            <p>{item?.recipient_name}</p>
+                        </div>
+                        <div>
+                            <p className='text-slate-400 text-sm'>Recipient Phone</p>
+                            <p>{item?.recipient_phone}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+
         <section className='grid md:grid-cols-2 grid-cols-1 pt-6 gap-5'>
             <div>
                 <h1 className='text-primary font-semibold'>Sender Details</h1>

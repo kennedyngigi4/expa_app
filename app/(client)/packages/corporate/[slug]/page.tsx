@@ -124,17 +124,6 @@ const CorporatePackageDetails = () => {
             </div>
           ))}
         </div>
-
-        <div>
-          <h1 className='text-primary font-semibold pb-2'>Package Attachments</h1>
-          {packageData?.package_attachments?.map((item: any, index: number) => (
-            <div className='flex flex-col pb-3' key={item.id}>
-              <a href={item?.attachment} target="_blank" download>
-                <p className='text-slate-400 text-sm flex'><File size={16} /> {item?.attachment.split("/").pop()}</p>
-              </a>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div>

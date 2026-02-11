@@ -59,6 +59,7 @@ export type PackageModel  = {
     created_at: string;
     current_office: string;
     manager_office_id: string;
+    package_items: any;
 }
 
 
