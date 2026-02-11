@@ -86,15 +86,11 @@ export function DataTable<TData, TValue>({
                 <div className="flex flex-row space-x-5 flex-wrap">
                     
                     
-                    {profile?.account_type === "business" ? (
-                        <Link href="/create_package/corporate">
-                            <Button className="cursor-pointer bg-black"><PlusCircle /> Add Order</Button>
-                        </Link>
-                    ) : (
+                    
                         <Link href="/create_package">
                             <Button className="cursor-pointer bg-black"><PlusCircle /> Add Order</Button>
                         </Link>
-                    )}
+                   
                     
                 </div>
             </div>
