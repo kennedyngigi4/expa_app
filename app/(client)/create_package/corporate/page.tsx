@@ -90,9 +90,9 @@ const CorporatePackageOrder = () => {
                 APIServices.get("fullloads/vehicle_types", session?.accessToken),
             ]);
 
-            setUrgencyTypes(urgencytypes);
-            setPackageTypes(packagetypes);
-            setVehicleTypes(vehicle_types);
+            setUrgencyTypes(urgencytypes.results);
+            setPackageTypes(packagetypes.results);
+            setVehicleTypes(vehicle_types.results);
         }
         fetchData();
     }, [session]);
